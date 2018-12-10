@@ -5,6 +5,8 @@
 
 require "fastlane"
 
+require "highway/utilities"
+
 module Highway
   module Runtime
 
@@ -33,11 +35,34 @@ module Highway
       # @return [Highway::Reporter]
       attr_reader :reporter
 
+      # Assert that a gem with specified name is available.
+      #
+      # @param name [String] Name of the gem.
+      def assert_gem_available!(name)
+        Fastlane::Actions.verify_gem!(name)
+      end
+
+      # Assert that an executable with specified name is available.
+      #
+      # @param name [String] Name of executable.
+      def assert_executable_available!(name)
+        unless FastlaneCore::CommandExecutor.which(name) != nil
+          @reporter.fatal!("Required executable '#{name}' could not be found. Make sure it's installed.")
+        end
+      end
+
+      # Whether `bundle exec` is available and should be used if possible.
+      #
+      # @return [Boolean]
+      def should_use_bundle_exec?()
+        return File.exist?("Gemfile")
+      end
+
       # Run a Fastlane lane.
       #
       # @param name [String, Symbol] Name of the lane.
-      # @param args [Hash] Options passed to the lane.
-      def run_lane(name, args)
+      # @param options [Hash] Options passed to the lane.
+      def run_lane(name, options:)
 
         unless contains_lane?(name)
           @reporter.fatal!("Can't execute lane '#{name}' because it doesn't exist.")
@@ -47,15 +72,15 @@ module Highway
           @reporter.fatal!("Can't execute lane '#{name}' because an action with the same name exists.")
         end
 
-        run_lane_or_action(name, args)
+        run_lane_or_action(name, options)
 
       end
 
       # Run a Fastlane action.
       #
       # @param name [String, Symbol] Name of the action.
-      # @param args [Hash] Options passed to the action.
-      def run_action(name, args)
+      # @param options [Hash] Options passed to the action.
+      def run_action(name, options:)
 
         unless contains_action?(name)
           @reporter.fatal!("Can't execute action '#{name}' because it doesn't exist.'")
@@ -65,7 +90,38 @@ module Highway
           @reporter.fatal!("Can't execute action '#{name}' because a lane with the same name exists.")
         end
 
-        run_lane_or_action(name, args)
+        run_lane_or_action(name, options)
+
+      end
+
+      # Run a shell command.
+      #
+      # @param command [String] A shell command.
+      # @param on_error [Proc] Called if command exits with a non-zero code.
+      def run_sh(command, on_error: nil)
+        Fastlane::FastFile.sh(command, error_callback: on_error)
+      end
+
+      # Execute the given block in the scope of overridden ENV variables. After
+      # that, old values will be restored.
+      #
+      # @param new_env [Hash] ENV variables to override.
+      # @param &block [Proc] A block to execute.
+      def with_env(new_env, &block)
+
+        old_env = Utilities::hash_map(new_env.keys) { |name|
+          [name, ENV[name]]
+        }
+
+        new_env.each_pair { |name, value|
+          ENV[name] = value
+        }
+
+        block.call()
+
+        old_env.each_pair { |name, value|
+          ENV[name] = value
+        }
 
       end
 

@@ -33,7 +33,7 @@ module Highway
         end
 
         def self.run(parameters:, context:)
-          context.run_action(parameters["name"], parameters["options"])
+          context.run_action(parameters["name"], options: parameters["options"])
         end
 
       end
