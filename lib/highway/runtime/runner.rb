@@ -90,7 +90,7 @@ module Highway
 
           invocation.step_class.run(parameters: coerced_parameters, context: @context)
 
-        rescue StandardError => error
+        rescue FastlaneCore::Interface::FastlaneException => error
           errors << Runtime::CapturedError.new(invocation: invocation, error: error)
           @reporter.error(error.message)
         end
