@@ -16,7 +16,7 @@ module Highway
         # Initialize an instance.
         #
         # @param values [Array<String>] Allowed enum values.
-        def initialize(values:)
+        def initialize(*values)
           @values = values
         end
 

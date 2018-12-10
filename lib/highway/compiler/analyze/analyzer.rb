@@ -4,6 +4,7 @@
 #
 
 require "highway/compiler/analyze/tree/root"
+require "highway/utilities"
 
 module Highway
   module Compiler
@@ -177,7 +178,7 @@ module Highway
             )
           elsif value.is_a?(Hash)
             Analyze::Tree::DictionaryValue.new(
-              children: hash_map(value) { |name, element|
+              children: Utilities::hash_map(value) { |name, element|
                 [name, segmentize_value(element)]
               }
             )
@@ -261,10 +262,6 @@ module Highway
 
         def keypath_to_s(keypath)
           keypath.join(".")
-        end
-
-        def hash_map(subject, &transform)
-          Hash[subject.map(&transform)]
         end
 
       end

@@ -1,5 +1,5 @@
 #
-# run_highway.rb
+# action.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 

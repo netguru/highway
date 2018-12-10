@@ -28,9 +28,14 @@ module Highway
         #
         # @return [Array<Object>, NilClass]
         def coerce_and_validate(value:)
-          return nil unless value.is_a?(::Array)
-          coerced = value.map { |element| element.coerce_and_validate(value: element) }
-          coerced if coerced.all? { |element| !element.nil? }
+          case value
+            when ::Array
+              coerced = value.map { |element| @element_type.coerce_and_validate(value: element) }
+              coerced if coerced.all? { |element| !element.nil? }
+            when ::String, ::Numeric, ::TrueClass, ::FalseClass
+              coerced = @element_type.coerce_and_validate(value: value)
+              [coerced] if coerced != nil
+          end
         end
 
       end

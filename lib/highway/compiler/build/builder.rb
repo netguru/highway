@@ -5,6 +5,7 @@
 
 require "highway/compiler/analyze/tree/root"
 require "highway/compiler/build/output/manifest"
+require "highway/utilities"
 
 module Highway
   module Compiler
@@ -109,7 +110,7 @@ module Highway
             )
           elsif value.is_a?(Analyze::Tree::DictionaryValue)
             Analyze::Tree::DictionaryValue.new(
-              children: hash_map(value.children) { |key, value|
+              children: Utilities::hash_map(value.children) { |key, value|
                 [key, build_value(value: value, variables: variables)]
               }
             )
@@ -141,10 +142,6 @@ module Highway
           
           reduced
 
-        end
-
-        def hash_map(subject, &transform)
-          Hash[subject.map(&transform)]
         end
 
       end

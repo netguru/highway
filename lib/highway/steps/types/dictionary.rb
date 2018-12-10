@@ -3,6 +3,8 @@
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
+require "highway/utilities"
+
 module Highway
   module Steps
     module Types
@@ -29,14 +31,8 @@ module Highway
         # @return [Hash<String, Object>, NilClass]
         def coerce_and_validate(value:)
           return nil unless value.is_a?(::Hash)
-          coerced = hash_map(value) { |key, element| [key, element.coerce_and_validate(value: element)] }
+          coerced = Utilities::hash_map(value) { |key, element| [key, @element_type.coerce_and_validate(value: element)] }
           coerced if coerced.values.all? { |element| !element.nil? }
-        end
-
-        private
-
-        def hash_map(subject, &transform)
-          ::Hash[subject.map(&transform)]
         end
 
       end

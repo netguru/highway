@@ -8,6 +8,7 @@ require "fastlane"
 require "highway/compiler/analyze/tree/root"
 require "highway/runtime/context"
 require "highway/runtime/error"
+require "highway/utilities"
 
 module Highway
   module Runtime
@@ -78,11 +79,11 @@ module Highway
       def run_invocation(invocation:, errors:)
         begin
 
-          evaluated_parameters = hash_map(invocation.parameters) { |parameter|
+          evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
             [parameter.name, evaluate_parameter(value: parameter.value)]
           }
 
-          coerced_parameters = hash_map(evaluated_parameters) { |name, value|
+          coerced_parameters = Utilities::hash_map(evaluated_parameters) { |name, value|
             definition = invocation.step_class.parameters.find { |definition| definition.name == name }
             [name, coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
           }
@@ -109,7 +110,7 @@ module Highway
             evaluate_parameter(value: value)
           }
         elsif value.is_a?(Compiler::Analyze::Tree::DictionaryValue)
-          hash_map(value.children) { |key, value|
+          Utilities::hash_map(value.children) { |key, value|
             [key, evaluate_parameter(value: value)]
           }
         end
@@ -125,10 +126,6 @@ module Highway
         else
           definition.default_value
         end
-      end
-
-      def hash_map(subject, &transform)
-        Hash[subject.map(&transform)]
       end
 
     end
