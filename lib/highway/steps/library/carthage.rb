@@ -12,8 +12,6 @@ module Highway
       # A step for executing Carthage.
       class Carthage < Step
 
-        public
-
         def self.name()
           "carthage"
         end
