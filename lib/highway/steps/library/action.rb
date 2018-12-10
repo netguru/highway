@@ -1,5 +1,5 @@
 #
-# lane.rb
+# action.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
@@ -9,11 +9,11 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing an arbitrary Fastlane lane.
-      class Lane < Step
+      # A step for executing an arbittary Fastlane action.
+      class Action < Step
 
         def self.name()
-          "lane"
+          "action"
         end
 
         def self.parameters()
@@ -33,7 +33,7 @@ module Highway
         end
 
         def self.run(parameters:, context:)
-          context.run_lane(parameters["name"], parameters["options"])
+          context.run_action(parameters["name"], parameters["options"])
         end
 
       end
