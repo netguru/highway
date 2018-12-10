@@ -1,0 +1,19 @@
+#
+# .gitignore
+# Copyright © 2018 Netguru S.A. All rights reserved.
+#
+
+.DS_Store
+.Trashes
+.localized
+
+.config
+.ruby-version
+.ruby-gemset
+
+*.gem
+*.rbc
+
+.env
+
+Gemfile.lock
