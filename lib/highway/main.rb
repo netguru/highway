@@ -37,25 +37,25 @@ module Highway
 
       compiler = Compiler::Frontend.new(
         reporter: reporter,
-        registry: registry
+        registry: registry,
       )
 
       manifest = compiler.compile(
         path: @fastlane_options[:highwayfile],
-        preset: @fastlane_options[:preset]
+        preset: @fastlane_options[:preset],
       )
 
       context = Runtime::Context.new(
         fastlane_options: @fastlane_options,
         fastlane_runner: @fastlane_runner,
         fastlane_lane_context: @fastlane_lane_context,
-        reporter: reporter
+        reporter: reporter,
       )
 
       runner = Runtime::Runner.new(
         context: context,
         manifest: manifest,
-        reporter: reporter
+        reporter: reporter,
       )
 
       runner.run()

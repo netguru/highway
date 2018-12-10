@@ -45,7 +45,7 @@ module Fastlane
           fastlane_options: options,
           fastlane_runner: runner,
           fastlane_lane_context: lane_context,
-          fastlane_ui: UI
+          fastlane_ui: UI,
         )
 
         main.run()

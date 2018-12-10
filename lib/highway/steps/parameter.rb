@@ -24,7 +24,7 @@ module Highway
         @required = required
         @type = type
         @default_value = default_value
-        @custom_validate = validate || proc { |value| true }
+        @custom_validate = validate || lambda { |value| true }
       end
 
       # Name of the parameter.

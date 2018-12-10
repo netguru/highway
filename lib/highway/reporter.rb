@@ -18,7 +18,7 @@ module Highway
     # @param fastlane_ui [Fastlane::UI] The Fastlane UI instance.
     def initialize(fastlane_ui:, transform: nil)
       @fastlane_ui = fastlane_ui
-      @transform = transform || proc { |message| message }
+      @transform = transform || lambda { |message| message }
     end
 
     # Display an error message and abort.
@@ -70,7 +70,7 @@ module Highway
     #
     # @param transform [Proc] The transforming block.
     def map(&other_transform)
-      self.class.new(fastlane_ui: @fastlane_ui, transform: proc { |message| other_transform.call(@transform.call(message)) })
+      self.class.new(fastlane_ui: @fastlane_ui, transform: lambda { |message| other_transform.call(@transform.call(message)) })
     end
 
   end
