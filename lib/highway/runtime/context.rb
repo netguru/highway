@@ -17,9 +17,9 @@ module Highway
 
       # Initialize an instance.
       #
-      # @param fastlane_options [Hash<String, Object>] The Fastlane action options.
+      # @param fastlane_options [Hash] The Fastlane action options.
       # @param fastlane_runner [Fastlane::Runner] The Fastlane runner.
-      # @param fastlane_lane_context [Hash<String, Object>] The Fastlane lane context.
+      # @param fastlane_lane_context [Hash] The Fastlane lane context.
       # @param reporter [Highway::Reporter] The reporter.
       def initialize(fastlane_options:, fastlane_runner:, fastlane_lane_context:, reporter:)
         @fastlane_options = fastlane_options
@@ -28,13 +28,16 @@ module Highway
         @reporter = reporter
       end
 
+      # The reporter instance.
+      #
+      # @return [Highway::Reporter]
       attr_reader :reporter
 
       # Run a Fastlane lane.
       #
       # @param name [String, Symbol] Name of the lane.
-      # @param *args [Hash<Symbol, Object>] Options passed to the lane.
-      def run_lane(name, *args)
+      # @param args [Hash] Options passed to the lane.
+      def run_lane(name, args)
 
         unless contains_lane?(name)
           @reporter.fatal!("Can't execute lane '#{name}' because it doesn't exist.")
@@ -44,15 +47,15 @@ module Highway
           @reporter.fatal!("Can't execute lane '#{name}' because an action with the same name exists.")
         end
 
-        run_lane_or_action(name, *args)
+        run_lane_or_action(name, args)
 
       end
 
       # Run a Fastlane action.
       #
       # @param name [String, Symbol] Name of the action.
-      # @param *arhs [Hash<Symbol, Object>] Options passed to the action.
-      def run_action(name, *args)
+      # @param args [Hash] Options passed to the action.
+      def run_action(name, args)
 
         unless contains_action?(name)
           @reporter.fatal!("Can't execute action '#{name}' because it doesn't exist.'")
@@ -62,7 +65,7 @@ module Highway
           @reporter.fatal!("Can't execute action '#{name}' because a lane with the same name exists.")
         end
 
-        run_lane_or_action(name, *args)
+        run_lane_or_action(name, args)
 
       end
 
@@ -79,8 +82,9 @@ module Highway
         action != nil
       end
 
-      def run_lane_or_action(name, *args)
-        @fastlane_runner.trigger_action_by_name(name.to_sym, FastlaneCore::FastlaneFolder.path, false, *args)
+      def run_lane_or_action(name, args)
+        symbolicated_args = Utilities::hash_map(args || {}) { |key, value| [key.to_sym, value] }
+        @fastlane_runner.trigger_action_by_name(name.to_sym, Dir.pwd, false, *[symbolicated_args])
       end
 
     end
