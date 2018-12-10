@@ -27,7 +27,7 @@ module Highway
     #
     # @return [Void]
     def fatal!(message)
-      @fastlane_ui.user_error!(decorate(message))
+      @fastlane_ui.user_error!(message)
     end
 
     # Display an error message.
@@ -36,7 +36,7 @@ module Highway
     #
     # @return [Void]
     def error(message)
-      @fastlane_ui.error(decorate(message))
+      @fastlane_ui.error(message)
     end
 
     # Display a warning message.
@@ -45,7 +45,7 @@ module Highway
     #
     # @return [Void]
     def warning(message)
-      @fastlane_ui.important(decorate(message))
+      @fastlane_ui.important(message)
     end
 
     # Display a note message.
@@ -54,7 +54,7 @@ module Highway
     #
     # @return [Void]
     def note(message)
-      @fastlane_ui.message(decorate(message))
+      @fastlane_ui.message(message)
     end
 
     # Display a success message.
@@ -63,7 +63,7 @@ module Highway
     #
     # @return [Void]
     def success(message)
-      @fastlane_ui.success(decorate(message))
+      @fastlane_ui.success(message)
     end
 
     # Pullback the UI with a block that transforms messages.
@@ -71,12 +71,6 @@ module Highway
     # @param transform [Proc] The transforming block.
     def map(&other_transform)
       self.class.new(fastlane_ui: @fastlane_ui, transform: proc { |message| other_transform.call(@transform.call(message)) })
-    end
-
-    private
-
-    def decorate(message)
-      "[Highway] #{@transform.call(message)}"
     end
 
   end
