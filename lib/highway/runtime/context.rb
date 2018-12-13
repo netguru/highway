@@ -38,6 +38,13 @@ module Highway
       # @return [Hash]
       attr_reader :fastlane_lane_context
 
+      # Whether running in verbose mode.
+      #
+      # @return [Boolean]
+      def verbose?()
+        FastlaneCore::Globals::verbose?
+      end
+
       # Assert that a gem with specified name is available.
       #
       # @param name [String] Name of the gem.
@@ -99,10 +106,10 @@ module Highway
 
       # Run a shell command.
       #
-      # @param command [String] A shell command.
+      # @param command [String, Array] A shell command.
       # @param on_error [Proc] Called if command exits with a non-zero code.
-      def run_sh(command, on_error: nil)
-        Fastlane::FastFile.sh(command, error_callback: on_error)
+      def run_sh(command, rescue_error: nil)
+        Fastlane::Actions.sh(command, error_callback: rescue_error)
       end
 
       # Execute the given block in the scope of overridden ENV variables. After

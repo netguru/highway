@@ -27,6 +27,7 @@ module Highway
         @manifest = manifest
         @context = context
         @interface = interface
+        @metrics = Array.new()
       end
 
       # Run the build manifest.
@@ -57,43 +58,75 @@ module Highway
 
       def run_invocations()
 
+        @interface.success("Running Highway preset '#{@manifest.preset}' 🏎")
+
         errors = []
 
         @manifest.invocations.each do |invocation|
-          if errors.empty? || invocation.policy == :always
-            run_invocation(invocation: invocation, errors: errors)
-          else
-            @interface.warning("Skipping step '#{invocation.step_class.name}' because a previous step has failed.")
-          end
+          run_invocation(invocation: invocation, errors: errors)
         end
+
+        report_metrics()
 
         if errors.empty?
           @interface.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
         else
-          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log for more information.")
+          clear_and_report_fastlane_lane_context()
+          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log.")
         end
 
       end
 
       def run_invocation(invocation:, errors:)
 
-        begin
+        name = invocation.step_class.name
+        start = Time.now
+        result = nil
 
-          evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
-            [parameter.name, evaluate_parameter(value: parameter.value)]
-          }
+        if errors.empty? || invocation.policy == :always
 
-          coerced_parameters = Utilities::hash_map(evaluated_parameters) { |name, value|
-            definition = invocation.step_class.parameters.find { |definition| definition.name == name }
-            [name, coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
-          }
+          @interface.header_success("Running step: #{name}...")
 
-          invocation.step_class.run(parameters: coerced_parameters, context: @context)
+          begin
 
-        rescue FastlaneCore::Interface::FastlaneException => error
-          errors << {invocation: invocation, error: error}
-          @interface.error(error.message)
+            evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
+              [parameter.name, evaluate_parameter(value: parameter.value)]
+            }
+
+            coerced_parameters = Utilities::hash_map(evaluated_parameters) { |name, value|
+              definition = invocation.step_class.parameters.find { |definition| definition.name == name }
+              [name, coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
+            }
+
+            invocation.step_class.run(parameters: coerced_parameters, context: @context)
+
+            result = :success
+
+          rescue FastlaneCore::Interface::FastlaneException => error
+
+            @interface.error(error.message)
+            errors << {invocation: invocation, error: error}
+
+            result = :failure
+
+          end
+
+        else
+
+          @interface.header_warning("Skipping step: #{name}...")
+          @interface.warning("Skipping step '#{invocation.step_class.name}' because a previous step has failed.")
+
+          result = :skip
+
         end
+
+        duration = (Time.now - start).round
+
+        add_metric(
+          name: name,
+          result: result,
+          duration: duration,
+        )
 
       end
 
@@ -127,6 +160,73 @@ module Highway
         else
           definition.default_value
         end
+      end
+
+      def add_metric(name:, result:, duration:)
+        @metrics << {
+          name: name,
+          result: result,
+          duration: duration,
+        }
+      end
+
+      def report_metrics()
+
+        rows = @metrics.each_with_index.map { |metric, index|
+
+          status = case metric[:result]
+            when :success then (index + 1).to_s
+            when :failure then "x"
+            when :skip then "-"
+          end
+
+          name = metric[:name]
+
+          minutes = (metric[:duration] / 60).floor
+          seconds = metric[:duration] % 60
+
+          duration = "#{minutes}m #{seconds}s" if minutes > 0
+          duration ||= "#{seconds}s"
+
+          row = [status, name, duration].map { |text|
+            case metric[:result]
+              when :success then text.green
+              when :failure then text.red.bold
+              when :skip then text.yellow
+            end
+          }
+
+          row
+
+        }
+
+        puts("\n")
+
+        @interface.table(
+          title: "Highway Summary".yellow,
+          headings: ["", "Step", "Duration"],
+          rows: rows
+        )
+
+        puts("\n")
+
+      end
+
+      def clear_and_report_fastlane_lane_context()
+
+        lane_context_rows = @context.fastlane_lane_context.collect do |key, content|
+          [key, content.to_s]
+        end
+
+        @interface.table(
+          title: "Lane Context".yellow,
+          rows: lane_context_rows
+        )
+
+        puts("\n")
+
+        @context.fastlane_lane_context.clear()
+
       end
 
     end

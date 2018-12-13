@@ -4,6 +4,7 @@
 #
 
 require "fastlane"
+require "terminal-table"
 
 module Highway
 
@@ -65,13 +66,43 @@ module Highway
       FastlaneCore::UI.message(message)
     end
 
-    # Display a header message.
+    # Display a success header message.
     #
     # @param message [String] The header message.
     #
     # @return [Void]
-    def header(message)
-      FastlaneCore::UI.header(message)
+    def header_success(message)
+      puts("\n")
+      success("--- #{message}".bold)
+    end
+
+    # Display a warning header message.
+    #
+    # @param message [String] The header message.
+    #
+    # @return [Void]
+    def header_warning(message)
+      puts("\n")
+      warning("--- #{message}".bold)
+    end
+
+    # Display a table.
+    #
+    # @param title [String] Table title.
+    # @param headings [Array<String>] Heading titles.
+    # @param rows [Array<String>] Row values.
+    #
+    # @return [Void]
+    def table(title: nil, headings: [], rows:)
+
+      table = Terminal::Table.new(
+        title: title,
+        headings: headings,
+        rows: FastlaneCore::PrintTable.transform_output(rows)
+      )
+
+      puts(table)
+
     end
 
     # Map the interface by transforming messages with a block.
