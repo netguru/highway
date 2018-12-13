@@ -23,10 +23,14 @@ module Highway
             @value = value
           end
 
-          # @return [String] Name of the parameter.
+          # Name of the parameter.
+          #
+          # @return [String] 
           attr_reader :name
 
-          # @return [Highway::Compiler::Analyze::Tree::Value] Value of the parameter.
+          # Value of the parameter.
+          #
+          # @return [Highway::Compiler::Analyze::Tree::Value] 
           attr_reader :value
 
         end

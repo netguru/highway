@@ -27,7 +27,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [String, NilClass]
+        # @return [String, nil]
         def coerce_and_validate(value:)
           coerced = Types::String.new().coerce_and_validate(value: value)
           coerced if !coerced.nil? && @values.include?(coerced)

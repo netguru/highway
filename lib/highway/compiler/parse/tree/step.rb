@@ -17,10 +17,10 @@ module Highway
           # Initialize an instance.
           #
           # @param name [String] Name of the step.
-          # @param parameters [Hash<String, Object>] Parameters of the step.
+          # @param parameters [Hash] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Numeric] Index of step in its scope.
+          # @param index [Integer] Index of step in its scope.
           def initialize(name:, parameters:, preset:, stage:, index:)
             @name = name
             @parameters = parameters
@@ -29,19 +29,29 @@ module Highway
             @index = index
           end
 
-          # @return [String] Name of the step.
+          # Name of the step.
+          #
+          # @return [String]
           attr_reader :name
 
-          # @return [Hash<String, Object>] Parameters of the step.
+          # Parameters of the step.
+          #
+          # @return [Hash]
           attr_reader :parameters
 
-          # @return [String] Parent preset of the step.
+          # Parent preset of the step.
+          #
+          # @return [String]
           attr_reader :preset
 
-          # @return [String] Parent stage of the step.
+          # Parent stage of the step.
+          #
+          # @return [String]
           attr_reader :stage
 
-          # @return [Numeric] Index of step in its scope.
+          # Index of step in its scope.
+          #
+          # @return [Integer]
           attr_reader :index
 
         end

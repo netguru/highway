@@ -7,7 +7,7 @@ require "highway/steps/step"
 
 module Highway
   module Steps
-  
+
     # This class is responsible for keeping track of available steps.
     class Registry
 
@@ -18,10 +18,11 @@ module Highway
         @classes = Set.new()
       end
 
-      # Initialize an instance and automatically load all steps in the library.
+      # Initialize an instance and automatically load all steps in the default
+      # library.
       #
-      # @return [Highway::Steps::Registry] The registry.
-      def self.new_load_library()
+      # @return [Highway::Steps::Registry]
+      def self.new_and_load_default_library()
 
         registry = self.new()
 
@@ -74,7 +75,7 @@ module Highway
       #
       # @param step_name [String] The step name.
       #
-      # @return [Class, NilClass] The step definition class or `nil`.
+      # @return [Class, nil]
       def get_by_name(step_name)
         @classes.find { |step_class| step_class.name == step_name }
       end

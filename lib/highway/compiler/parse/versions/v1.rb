@@ -17,16 +17,16 @@ module Highway
 
           # Initialize an instance.
           #
-          # @param reporter [Highway::Compiler::Parse::Reporter] The reporter.
-          def initialize(reporter:)
-            @reporter = reporter
+          # @param reporter [Highway::Interface] The interface.
+          def initialize(interface:)
+            @interface = interface
           end
 
           # Parse the configuration file v1.
           #
-          # @param raw [Hash<Object, Object>] Raw content of configuration file.
+          # @param raw [Hash] Raw content of configuration file.
           #
-          # @return [Highway::Compiler::Parse::Tree::Root] The parse tree.
+          # @return [Highway::Compiler::Parse::Tree::Root]
           def parse(raw:)
 
             parse_tree = Parse::Tree::Root.new(version: 1)
@@ -40,7 +40,7 @@ module Highway
 
           end
 
-          private 
+          private
 
           def validate_toplevel_keys(raw:)
             expected = %w(version variables bootstrap test deploy report)
@@ -79,26 +79,26 @@ module Highway
           def assert_toplevel_key_valid(actual, expected:)
             unless expected.include?(actual)
               expected_keys = expected.map { |key| "'#{key}'" }.join(", ")
-              @reporter.fatal!("Invalid top-level key: '#{actual}'. Expected one of: [#{expected_keys}].")
+              @interface.fatal!("Invalid top-level key: '#{actual}'. Expected one of: [#{expected_keys}].")
             end
           end
 
           def assert_value_type(actual, expected:, keypath:)
             if expected.is_a?(Class)
               unless actual.is_a?(expected)
-                @reporter.fatal!("Invalid type of value: '#{actual}' at: '#{keypath}'. Expected: '#{expected}', got: '#{actual.class}'.")
+                @interface.fatal!("Invalid type of value: '#{actual}' at: '#{keypath}'. Expected: '#{expected}', got: '#{actual.class}'.")
               end
             elsif expected.is_a?(Array)
               unless (expected.any? { |klass| actual.is_a?(klass) })
                 expected_types = expected.map { |klass| "'#{klass}'"}.join(", ")
-                @reporter.fatal!("Invalid type of value: '#{actual}' at: '#{keypath}'. Expected one of: [#{expected_types}], got: '#{actual.class}'.")
+                @interface.fatal!("Invalid type of value: '#{actual}' at: '#{keypath}'. Expected one of: [#{expected_types}], got: '#{actual.class}'.")
               end
             end
           end
 
           def assert_value_length(actual, expected:, keypath:)
             unless actual.length == expected
-              @reporter.fatal!("Invalid length of value at: '#{keypath}'. Expected: #{expected}, got: #{actual}.")
+              @interface.fatal!("Invalid length of value at: '#{keypath}'. Expected: #{expected}, got: #{actual}.")
             end
           end
 

@@ -10,13 +10,13 @@ module Highway
 
         # This class is a base abstract class for `StaticValueSegment`,
         # `VariableValueSegment` and `EnvVariableValueSegment`.
-        class ValueSegment
-
-        end
+        class ValueSegment; end
 
         # This class represents a static primitive value segment in the semantic
         # tree. It consists of a raw string.
         class TextValueSegment < ValueSegment
+
+          public
 
           # Initialize an instance.
           #
@@ -25,7 +25,9 @@ module Highway
             @value = value
           end
 
-          # @return [String] The static value.
+          # The static value.
+          #
+          # @return [String]
           attr_reader :value
 
         end
@@ -34,6 +36,8 @@ module Highway
         # semantic tree. It consists of a variable name.
         class VariableValueSegment < ValueSegment
 
+          public
+
           # Initialize an instance.
           #
           # @param variable_name [String] The variable name.
@@ -41,14 +45,18 @@ module Highway
             @variable_name = variable_name
           end
 
-          # @return [String] The variable name.
+          # The variable name.
+          #
+          # @return [String]
           attr_reader :variable_name
-          
+
         end
 
         # This class represents an env variable primitive value segment in the
         # semantic tree. It consists of an env variable name.
         class EnvVariableValueSegment < ValueSegment
+
+          public
 
           # Initialize an instance.
           #
@@ -57,7 +65,9 @@ module Highway
             @variable_name = variable_name
           end
 
-          # @return [String] The variable name.
+          # The variable name.
+          #
+          # @return [String]
           attr_reader :variable_name
 
         end

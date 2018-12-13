@@ -26,7 +26,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [Array<Object>, NilClass]
+        # @return [Array<Object>, nil]
         def coerce_and_validate(value:)
           case value
             when ::Array

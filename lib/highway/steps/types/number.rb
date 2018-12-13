@@ -20,7 +20,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [Integer, Float, NilClass]
+        # @return [Integer, Float, nil]
         def coerce_and_validate(value:)
           case value
             when ::Numeric then value

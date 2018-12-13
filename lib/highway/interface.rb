@@ -1,5 +1,5 @@
 #
-# reporter.rb
+# interface.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
@@ -9,52 +9,15 @@ module Highway
 
   # This class is responsible for interfacing with the user (e.g. displaying
   # error messages), using Fastlane UI mechanism underneath.
-  class Reporter
+  class Interface
 
     public
 
     # Initialize an instance.
     #
-    # @param fastlane_ui [Fastlane::UI] The Fastlane UI instance.
-    def initialize(fastlane_ui:, transform: nil)
-      @fastlane_ui = fastlane_ui
-      @transform = transform || lambda { |message| message }
-    end
-
-    # Display an error message and abort.
-    #
-    # @param message [String] The error message.
-    #
-    # @return [Void]
-    def fatal!(message)
-      @fastlane_ui.user_error!(message)
-    end
-
-    # Display an error message.
-    #
-    # @param message [String] The error message.
-    #
-    # @return [Void]
-    def error(message)
-      @fastlane_ui.error(message)
-    end
-
-    # Display a warning message.
-    #
-    # @param message [String] The warning message.
-    #
-    # @return [Void]
-    def warning(message)
-      @fastlane_ui.important(message)
-    end
-
-    # Display a note message.
-    #
-    # @param message [String] The note message.
-    #
-    # @return [Void]
-    def note(message)
-      @fastlane_ui.message(message)
+    # @param transform [Proc] A transforming block.
+    def initialize(transform: nil)
+      @transform = transform || :itself.to_proc
     end
 
     # Display a success message.
@@ -63,16 +26,63 @@ module Highway
     #
     # @return [Void]
     def success(message)
-      @fastlane_ui.success(message)
+      FastlaneCore::UI.success(message)
     end
 
-    # Pullback the UI with a block that transforms messages.
+    # Display an error message and abort.
     #
-    # @param transform [Proc] The transforming block.
-    def map(&other_transform)
-      self.class.new(fastlane_ui: @fastlane_ui, transform: lambda { |message| other_transform.call(@transform.call(message)) })
+    # @param message [String] The error message.
+    #
+    # @return [Void]
+    def fatal!(message)
+      FastlaneCore::UI.user_error!(message)
+    end
+
+    # Display an error message.
+    #
+    # @param message [String] The error message.
+    #
+    # @return [Void]
+    def error(message)
+      FastlaneCore::UI.error(message)
+    end
+
+    # Display a warning message.
+    #
+    # @param message [String] The warning message.
+    #
+    # @return [Void]
+    def warning(message)
+      FastlaneCore::UI.important(message)
+    end
+
+    # Display a note message.
+    #
+    # @param message [String] The note message.
+    #
+    # @return [Void]
+    def note(message)
+      FastlaneCore::UI.message(message)
+    end
+
+    # Display a header message.
+    #
+    # @param message [String] The header message.
+    #
+    # @return [Void]
+    def header(message)
+      FastlaneCore::UI.header(message)
+    end
+
+    # Map the interface by transforming messages with a block.
+    #
+    # @param other [Proc] A transforming block.
+    #
+    # @return [Highway::Interface]
+    def map(&other)
+      self.class.new(transform: lambda { |message| other.call(@transform.call(message)) })
     end
 
   end
-  
+
 end

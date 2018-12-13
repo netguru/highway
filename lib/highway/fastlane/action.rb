@@ -46,6 +46,7 @@ module Fastlane
           fastlane_runner: runner,
           fastlane_lane_context: lane_context,
           fastlane_ui: UI,
+          mode: :action,
         )
 
         main.run()

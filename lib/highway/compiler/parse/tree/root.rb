@@ -19,20 +19,26 @@ module Highway
 
           # Initialize an instance.
           #
-          # @param version [Numeric] Version of the parse tree.
+          # @param version [Integer] Version of the parse tree.
           def initialize(version:)
             @version = version
             @variables = Array.new()
             @steps = Array.new()
           end
 
-          # @return [Numeric] Version of the parse tree.
+          # Version of the parse tree.
+          #
+          # @return [Integer]
           attr_reader :version
-          
-          # @return [Array<Highway::Compiler::Parse::Tree::Variable>] Variables in the tree.
+
+          # Variables in the tree.
+          #
+          # @return [Array<Highway::Compiler::Parse::Tree::Variable>]
           attr_reader :variables
 
-          # @return [Array<Highway::Compiler::Parse::Tree::Step>] Steps in the tree.
+          # Steps in the tree.
+          #
+          # @return [Array<Highway::Compiler::Parse::Tree::Step>]
           attr_reader :steps
 
           # Add a variable to the tree.
@@ -40,6 +46,8 @@ module Highway
           # @param name [String] Name of the variable.
           # @param value [String] Raw value of the variable.
           # @param preset [String] Parent preset of the variable.
+          #
+          # @return [Void]
           def add_variable(name:, value:, preset:)
             @variables << Variable.new(name: name, value: value, preset: preset)
           end
@@ -47,10 +55,12 @@ module Highway
           # Add a step to the tree.
           #
           # @param name [String] Name of the step.
-          # @param parameters [Hash<String, Object>] Parameters of the step.
+          # @param parameters [Hash] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Numeric] Index of step in its scope.
+          # @param index [Integer] Index of step in its scope.
+          #
+          # @return [Void]
           def add_step(name:, parameters:, preset:, stage:, index:)
             @steps << Step.new(name: name, parameters: parameters, preset: preset, stage: stage, index: index)
           end

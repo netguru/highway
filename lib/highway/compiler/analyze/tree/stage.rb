@@ -17,21 +17,27 @@ module Highway
           # Initialize an instance.
           #
           # @param name [String] Name of the stage.
-          # @param policy [:normal, :always] Execution policy of the stage.
-          # @param index [Numeric] Index of the stage.
+          # @param policy [Symbol] Execution policy of the stage.
+          # @param index [Integer] Index of the stage.
           def initialize(name:, policy:, index:)
             @name = name
             @policy = policy
             @index = index
           end
 
-          # @return [String] Name of the stage.
+          # Name of the stage.
+          #
+          # @return [String]
           attr_reader :name
 
-          # @return [:normal, :always] Execution policy of the stage.
+          # Execution policy of the stage.
+          #
+          # @return [Symbol]
           attr_reader :policy
 
-          # @return [Numeric] Index of the stage.
+          # Index of the stage.
+          #
+          # @return [Integer]
           attr_reader :index
 
         end

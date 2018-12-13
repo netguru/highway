@@ -16,7 +16,7 @@ module Highway
     # @param subject [Hash] An input hash.
     # @param transform [Proc] A transformation block.
     #
-    # @return [Hash] 
+    # @return [Hash]
     def self.hash_map(subject, &transform)
       Hash[subject.map(&transform)]
     end

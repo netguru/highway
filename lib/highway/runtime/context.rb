@@ -19,21 +19,24 @@ module Highway
 
       # Initialize an instance.
       #
-      # @param fastlane_options [Hash] The Fastlane action options.
       # @param fastlane_runner [Fastlane::Runner] The Fastlane runner.
       # @param fastlane_lane_context [Hash] The Fastlane lane context.
-      # @param reporter [Highway::Reporter] The reporter.
-      def initialize(fastlane_options:, fastlane_runner:, fastlane_lane_context:, reporter:)
-        @fastlane_options = fastlane_options
+      # @param reporter [Highway::Interface] The interface.
+      def initialize(fastlane_runner:, fastlane_lane_context:, interface:)
         @fastlane_runner = fastlane_runner
         @fastlane_lane_context = fastlane_lane_context
-        @reporter = reporter
+        @interface = interface
       end
 
-      # The reporter instance.
+      # The interface.
       #
-      # @return [Highway::Reporter]
-      attr_reader :reporter
+      # @return [Highway::Interface]
+      attr_reader :interface
+
+      # The Fastlane lane context.
+      #
+      # @return [Hash]
+      attr_reader :fastlane_lane_context
 
       # Assert that a gem with specified name is available.
       #
@@ -47,7 +50,7 @@ module Highway
       # @param name [String] Name of executable.
       def assert_executable_available!(name)
         unless FastlaneCore::CommandExecutor.which(name) != nil
-          @reporter.fatal!("Required executable '#{name}' could not be found. Make sure it's installed.")
+          @interface.fatal!("Required executable '#{name}' could not be found. Make sure it's installed.")
         end
       end
 
@@ -65,11 +68,11 @@ module Highway
       def run_lane(name, options:)
 
         unless contains_lane?(name)
-          @reporter.fatal!("Can't execute lane '#{name}' because it doesn't exist.")
+          @interface.fatal!("Can't execute lane '#{name}' because it doesn't exist.")
         end
 
         unless !contains_action?(name)
-          @reporter.fatal!("Can't execute lane '#{name}' because an action with the same name exists.")
+          @interface.fatal!("Can't execute lane '#{name}' because an action with the same name exists.")
         end
 
         run_lane_or_action(name, options)
@@ -83,11 +86,11 @@ module Highway
       def run_action(name, options:)
 
         unless contains_action?(name)
-          @reporter.fatal!("Can't execute action '#{name}' because it doesn't exist.'")
+          @interface.fatal!("Can't execute action '#{name}' because it doesn't exist.'")
         end
 
         unless !contains_lane?(name)
-          @reporter.fatal!("Can't execute action '#{name}' because a lane with the same name exists.")
+          @interface.fatal!("Can't execute action '#{name}' because a lane with the same name exists.")
         end
 
         run_lane_or_action(name, options)
@@ -140,7 +143,7 @@ module Highway
 
       def run_lane_or_action(name, args)
         symbolicated_args = Utilities::hash_map(args || {}) { |key, value| [key.to_sym, value] }
-        @fastlane_runner.trigger_action_by_name(name.to_sym, Dir.pwd, false, *[symbolicated_args])
+        @fastlane_runner.trigger_action_by_name(name.to_sym, Dir.pwd, true, *[symbolicated_args])
       end
 
     end

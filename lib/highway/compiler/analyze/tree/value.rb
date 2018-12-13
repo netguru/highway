@@ -14,22 +14,30 @@ module Highway
         # and `DictionaryValue`.
         class Value
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>] All segments.
+          # All segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>]
           def segments
             raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
           end
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::VariableSegment>] All variable segments.
+          # All variable segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::VariableSegment>]
           def variable_segments
             segments.select { |segment| segment.is_a?(VariableValueSegment) }
           end
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::EnvVariableSegment>] All ENV variable segments.
+          # All environment variable segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::EnvVariableSegment>]
           def env_variable_segments
             segments.select { |segment| segment.is_a?(EnvVariableValueSegment) }
           end
 
-          # @return [TrueClass, FalseClass] Whether the value contains any ENV variable segments.
+          # Whether the value contains any ENV variable segments.
+          #
+          # @return [Boolean]
           def contains_env_variable_segments?
             !env_variable_segments.empty?
           end
@@ -40,6 +48,8 @@ module Highway
         # consists of primitive value interpolation segments.
         class PrimitiveValue < Value
 
+          public
+
           # Initialize an instance.
           #
           # @param segments [Array<Highway::Compiler::Analyze::Tree::ValueSegment>] The interpolation segments.
@@ -47,7 +57,9 @@ module Highway
             @segments = segments
           end
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>] The interpolation segments.
+          # The interpolation segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>]
           attr_reader :segments
 
         end
@@ -56,6 +68,8 @@ module Highway
         # of other values.
         class ArrayValue < Value
 
+          public
+
           # Initialize an instance.
           #
           # @param children [Array<Highway::Compiler::Analyze::Tree::Value>] The children values.
@@ -63,10 +77,14 @@ module Highway
             @children = children
           end
 
-          # @returns [Array<Highway::Compiler::Analyze::Tree::Value>] The children values.
+          # The children values.
+          #
+          # @returns [Array<Highway::Compiler::Analyze::Tree::Value>]
           attr_reader :children
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>] All segments.
+          # All segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>]
           def segments
             children.flat_map { |child| child.segments() }
           end
@@ -77,6 +95,8 @@ module Highway
         # consists of pairs of keys and other values.
         class DictionaryValue < Value
 
+          public
+
           # Initialize an instance.
           #
           # @param children [Hash<String, Highway::Compiler::Analyze::Tree::Value>] The children values.
@@ -84,10 +104,14 @@ module Highway
             @children = children
           end
 
-          # @returns [Hash<String, Highway::Compiler::Analyze::Tree::Value>] The children values.
+          # The children values.
+          #
+          # @returns [Hash<String, Highway::Compiler::Analyze::Tree::Value>]
           attr_reader :children
 
-          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>] All segments.
+          # All segments.
+          #
+          # @return [Array<Highway::Compiler::Analyze::Tree::ValueSegment>]
           def segments
             children.values.flat_map { |child| child.segments() }
           end

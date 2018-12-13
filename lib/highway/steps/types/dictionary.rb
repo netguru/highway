@@ -28,7 +28,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [Hash<String, Object>, NilClass]
+        # @return [Hash<String, Object>, nil]
         def coerce_and_validate(value:)
           return nil unless value.is_a?(::Hash)
           coerced = Utilities::hash_map(value) { |key, element| [key, @element_type.coerce_and_validate(value: element)] }

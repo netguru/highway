@@ -18,11 +18,11 @@ module Highway
 
         # Initialize an instance.
         #
-        # @param reporter [Highway::Reporter] The reporter.
         # @param registry [Highway::Steps::Registry] The steps registry.
-        def initialize(reporter:, registry:)
-          @reporter = reporter
+        # @param reporter [Highway::Interface] The interface.
+        def initialize(registry:, interface:)
           @registry = registry
+          @interface = interface
         end
 
         # Analyze the parse tree.
@@ -31,9 +31,12 @@ module Highway
         # performs segmentation of values and resolves steps against the
         # registry.
         #
+        # The semantic analyzer produces a semantic tree which is then used by
+        # build phase to generate a manifest.
+        #
         # @param parse_tree [Highway::Compiler::Parse::Tree::Root] The parse tree.
         #
-        # @return [Highway::Compiler::Analyze::Tree::Root] The semantic tree.
+        # @return [Highway::Compiler::Analyze::Tree::Root]
         def analyze(parse_tree:)
 
           sema_tree = Analyze::Tree::Root.new()
@@ -53,7 +56,7 @@ module Highway
 
           resolve_variables(parse_tree: parse_tree, sema_tree: sema_tree)
           resolve_steps(parse_tree: parse_tree, sema_tree: sema_tree)
-          
+
           validate_variable_references(sema_tree: sema_tree)
           validate_step_parameter_names(sema_tree: sema_tree)
           validate_step_parameter_optionality(sema_tree: sema_tree)
@@ -103,10 +106,10 @@ module Highway
           sema_tree.variables.each do |variable|
             variable.value.variable_segments.each do |segment|
               unless (ref_variable = find_referenced_variable(sema_tree: sema_tree, name: segment.variable_name, preset: variable.preset))
-                @reporter.fatal!("Unknown variable: '#{segment.variable_name}' referenced from: '#{keypath_to_s(["variables", variable.preset, variable.name])}'.")
+                @interface.fatal!("Unknown variable: '#{segment.variable_name}' referenced from: '#{keypath_to_s(["variables", variable.preset, variable.name])}'.")
               end
               if ref_variable.value.variable_segments.any? { |other| other.variable_name == variable.name }
-                @reporter.fatal!("Detected a reference cycle between: '#{keypath_to_s(["variables", variable.preset, variable.name])}' and '#{keypath_to_s(["variables", ref_variable.preset, ref_variable.name])}'.")
+                @interface.fatal!("Detected a reference cycle between: '#{keypath_to_s(["variables", variable.preset, variable.name])}' and '#{keypath_to_s(["variables", ref_variable.preset, ref_variable.name])}'.")
               end
             end
           end
@@ -114,7 +117,7 @@ module Highway
             step.parameters.each do |parameter|
               parameter.value.variable_segments.each do |segment|
                 unless find_referenced_variable(sema_tree: sema_tree, name: segment.variable_name, preset: step.preset)
-                  @reporter.fatal!("Unknown variable: '#{segment.variable_name}' referenced from: '#{keypath_to_s([step.stage, step.preset, step.name, parameter.name])}'.")
+                  @interface.fatal!("Unknown variable: '#{segment.variable_name}' referenced from: '#{keypath_to_s([step.stage, step.preset, step.name, parameter.name])}'.")
                 end
               end
             end
@@ -197,47 +200,47 @@ module Highway
 
         def assert_preset_name_valid(value, keypath:)
           unless %r(^[a-z_]*$) =~ value
-            @reporter.fatal!("Invalid preset name: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+            @interface.fatal!("Invalid preset name: '#{value}' at: '#{keypath_to_s(keypath)}'.")
           end
         end
 
         def assert_variable_name_valid(value, keypath:)
           unless %r(^[A-Z_][A-Z0-9_]*$) =~ value
-            @reporter.fatal!("Invalid variable name: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+            @interface.fatal!("Invalid variable name: '#{value}' at: '#{keypath_to_s(keypath)}'.")
           end
         end
 
         def assert_variable_value_valid(value, keypath:)
           if value.is_a?(String)
             unless %r(^((?:[^\$]*(?:(?:\\\$)|(?<!\\)\$\((?:ENV:)?[A-Z_][A-Z0-9_]*\))*)*)$) =~ value
-              @reporter.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+              @interface.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
             end
           elsif value.is_a?(Array) || value.is_a?(Hash)
-            @reporter.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+            @interface.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
           else
             unless value.is_a?(TrueClass) || value.is_a?(FalseClass) || value.is_a?(Numeric) || value.is_a?(NilClass)
-              @reporter.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+              @interface.fatal!("Invalid variable value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
             end
           end
         end
 
         def assert_step_exists(value, keypath:)
           unless @registry.get_by_name(value)
-            @reporter.fatal!("Unknown step: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+            @interface.fatal!("Unknown step: '#{value}' at: '#{keypath_to_s(keypath)}'.")
           end
         end
 
         def assert_step_parameter_name_valid(value, expected:, keypath:)
           unless expected.include?(value)
             expected_names = expected.map { |name| "'#{name}'" }.join(", ")
-            @reporter.fatal!("Unknown step parameter: '#{value}' at '#{keypath_to_s(keypath)}'. Expected one of: [#{expected_names}].")
+            @interface.fatal!("Unknown step parameter: '#{value}' at '#{keypath_to_s(keypath)}'. Expected one of: [#{expected_names}].")
           end
         end
 
         def assert_step_parameter_value_valid(value, keypath:)
           if value.is_a?(String)
             unless %r(^((?:[^\$]*(?:(?:\\\$)|(?<!\\)\$\((?:ENV:)?[A-Z_]+\))*)*)$) =~ value
-              @reporter.fatal!("Invalid step parameter value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+              @interface.fatal!("Invalid step parameter value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
             end
           elsif value.is_a?(Array)
             value.each_with_index do |single_value, index|
@@ -249,14 +252,14 @@ module Highway
             end
           else
             unless value.is_a?(TrueClass) || value.is_a?(FalseClass) || value.is_a?(Numeric) || value.is_a?(NilClass)
-              @reporter.fatal!("Invalid step parameter value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
+              @interface.fatal!("Invalid step parameter value: '#{value}' at: '#{keypath_to_s(keypath)}'.")
             end
           end
         end
 
         def assert_step_parameter_exists(value, expected:, keypath:)
           unless value.include?(expected)
-            @reporter.fatal!("Missing value for required step parameter: '#{expected}' at: '#{keypath_to_s(keypath)}'.")
+            @interface.fatal!("Missing value for required step parameter: '#{expected}' at: '#{keypath_to_s(keypath)}'.")
           end
         end
 

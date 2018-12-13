@@ -5,61 +5,76 @@
 
 require "fastlane"
 
-require "highway/compiler/frontend"
+require "highway/compiler/suite"
+require "highway/interface"
 require "highway/runtime/runner"
 require "highway/steps/registry"
-require "highway/reporter"
 
 module Highway
 
-  # A class responsible for running Highway.
+  # This class is a main entry point to Highway.
   class Main
 
-    # Initialize a runner with a bunch of Fastlane dependencies.
+    public
+
+    # Initialize an instance.
     #
-    # @param fastlane_options [Hash<String, Object>] The Fastlane action options.
-    # @param fastlane_runner [Fastlane::Runner] The Fastlane runner.
-    # @param fastlane_lane_context [Hash<String, Object>] The Fastlane lane context.
-    # @param fastlane_ui [Fastlane::UI] The Fastlane UI.
-    def initialize(fastlane_options:, fastlane_runner:, fastlane_lane_context:, fastlane_ui:)
-      @fastlane_options = fastlane_options
+    # @param option_path [String] Path to the configuration file.
+    # @param option_preset [String] Preset to run.
+    # @param fastlane_runner [Fastlane::Runner] The fastlane runner.
+    # @param fastlane_lane_context [Hash] The fastlane lane context.
+    # @param mode [Symbol] The mode in which Highway is running.
+    def initialize(option_path:, option_preset:, fastlane_runner:, fastlane_lane_context:, mode:)
+      @option_path = option_path
+      @option_preset = option_preset
       @fastlane_runner = fastlane_runner
       @fastlane_lane_context = fastlane_lane_context
-      @fastlane_ui = fastlane_ui
+      @mode = mode
     end
 
-    # Run Highway. Called directly from `run_highway` Fastlane action.
+    # Run Highway.
+    #
+    # @return [Void]
     def run()
 
-      reporter = Highway::Reporter.new(fastlane_ui: @fastlane_ui)
+      Dir.chdir(running_dir) do
 
-      registry = Highway::Steps::Registry.new_load_library()
+        interface = Interface.new()
 
-      compiler = Compiler::Frontend.new(
-        reporter: reporter,
-        registry: registry,
-      )
+        registry = Steps::Registry.new_and_load_default_library()
 
-      manifest = compiler.compile(
-        path: @fastlane_options[:highwayfile],
-        preset: @fastlane_options[:preset],
-      )
+        compiler = Compiler::Suite.new(
+          registry: registry,
+          interface: interface
+        )
 
-      context = Runtime::Context.new(
-        fastlane_options: @fastlane_options,
-        fastlane_runner: @fastlane_runner,
-        fastlane_lane_context: @fastlane_lane_context,
-        reporter: reporter,
-      )
+        manifest = compiler.compile(
+          path: @option_path,
+          preset: @option_preset
+        )
 
-      runner = Runtime::Runner.new(
-        context: context,
-        manifest: manifest,
-        reporter: reporter,
-      )
+        context = Runtime::Context.new(
+          fastlane_runner: @fastlane_runner,
+          fastlane_lane_context: @fastlane_lane_context,
+          interface: interface
+        )
 
-      runner.run()
+        runner = Runtime::Runner.new(
+          manifest: manifest,
+          context: context,
+          interface: interface,
+        )
 
+        runner.run()
+
+      end
+
+    end
+
+    private
+
+    def running_dir
+      File.expand_path(FastlaneCore::FastlaneFolder.path, "..")
     end
 
   end

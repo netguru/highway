@@ -19,7 +19,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [TrueClass, FalseClass, NilClass]
+        # @return [Boolean, nil]
         def coerce_and_validate(value:)
           case value
             when ::TrueClass, 1, "1", "true", "yes" then true

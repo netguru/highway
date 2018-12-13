@@ -5,7 +5,7 @@
 
 module Highway
   module Steps
-    
+
     # This class serves as a base class for all step definition classes. It
     # contains a common API and some useful utilities.
     class Step
@@ -21,14 +21,14 @@ module Highway
 
       # Parameters that this step recognizes.
       #
-      # @return [Array<Highway::Steps::Parameter]
+      # @return [Array<Highway::Steps::Parameter>]
       def self.parameters()
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
       end
 
       # Run the step in given context containing inputs and Fastlane runner.
       #
-      # @param parameters [Hash<String, Object>] Parameters of theb step.
+      # @param parameters [Hash] Parameters of the step.
       # @param context [Highway::Runtime::Context] The runtime context.
       #
       # @return [Void]

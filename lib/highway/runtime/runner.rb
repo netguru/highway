@@ -7,7 +7,6 @@ require "fastlane"
 
 require "highway/compiler/analyze/tree/root"
 require "highway/runtime/context"
-require "highway/runtime/error"
 require "highway/utilities"
 
 module Highway
@@ -23,11 +22,11 @@ module Highway
       #
       # @parameter context [Highway::Runtime::Context] The runtime context.
       # @parameter manifest [Highway::Compiler::Build::Output::Manifest] The build manifest.
-      # @parameter manifest [Highway::Reporter] The reporter.
-      def initialize(context:, manifest:, reporter:)
-        @context = context
+      # @parameter manifest [Highway::Interface] The interface.
+      def initialize(manifest:, context:, interface:)
         @manifest = manifest
-        @reporter = reporter
+        @context = context
+        @interface = interface
       end
 
       # Run the build manifest.
@@ -64,19 +63,20 @@ module Highway
           if errors.empty? || invocation.policy == :always
             run_invocation(invocation: invocation, errors: errors)
           else
-            @reporter.warning("Skipping step '#{invocation.step_class.name}' because a previous step has failed.")
+            @interface.warning("Skipping step '#{invocation.step_class.name}' because a previous step has failed.")
           end
         end
 
         if errors.empty?
-          @reporter.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
+          @interface.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
         else
-          @reporter.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log for more information.")
+          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log for more information.")
         end
 
       end
 
       def run_invocation(invocation:, errors:)
+
         begin
 
           evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
@@ -91,9 +91,10 @@ module Highway
           invocation.step_class.run(parameters: coerced_parameters, context: @context)
 
         rescue FastlaneCore::Interface::FastlaneException => error
-          errors << Runtime::CapturedError.new(invocation: invocation, error: error)
-          @reporter.error(error.message)
+          errors << {invocation: invocation, error: error}
+          @interface.error(error.message)
         end
+
       end
 
       def evaluate_parameter(value:)
@@ -121,7 +122,7 @@ module Highway
           if (coerced = definition.type.coerce_and_validate(value: value))
             coerced
           else
-            @reporter.fatal!("Invalid value: '#{value}' for parameter: '#{definition.name}' of step: '#{invocation.step_class.name}'.")
+            @interface.fatal!("Invalid value: '#{value}' for parameter: '#{definition.name}' of step: '#{invocation.step_class.name}'.")
           end
         else
           definition.default_value

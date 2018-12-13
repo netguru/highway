@@ -21,10 +21,14 @@ module Highway
             @invocations = Array.new()
           end
 
-          # @return [String] The preset.
+          # The preset.
+          #
+          # @return [String]
           attr_accessor :preset
 
-          # @return [Array<Highway::Compiler::Build::Output::Invocation>] Invocations in the manifest.
+          # Invocations in the manifest.
+          #
+          # @return [Array<Highway::Compiler::Build::Output::Invocation>]
           attr_reader :invocations
 
           # Add an invocation to the manifest.
@@ -32,6 +36,8 @@ module Highway
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step invocation.
           # @param policy [:normal, :always] Execution policy of the step invocation.
+          #
+          # @return [Void]
           def add_invocation(step_class:, parameters:, policy:)
             @invocations << Invocation.new(step_class: step_class, parameters: parameters, policy: policy)
           end

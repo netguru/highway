@@ -10,7 +10,7 @@ require "highway/utilities"
 module Highway
   module Compiler
     module Build
-      
+
       # This class is responsible for manifest generation based on the semantic
       # tree. This is the third and final phase of the compiler.
       class Builder
@@ -19,9 +19,9 @@ module Highway
 
         # Initialize an instance.
         #
-        # @param reporter [Highway::Reporter] The reporter.
-        def initialize(reporter:)
-          @reporter = reporter
+        # @param interface [Highway::Interface] The interface.
+        def initialize(interface:)
+          @interface = interface
         end
 
         # Build the manifst.
@@ -29,9 +29,11 @@ module Highway
         # The builder resolves variables and steps in the semantic tree for
         # given preset and builds concrete invocations.
         #
+        # The builder produces a manifest that is later executed by runner.
+        #
         # @param sema_tree [Highway::Compiler::Analyze::Tree::Root] The semantic tree.
         #
-        # return [Highway::Compiler::Build::Output::Manifest] The build manifest.
+        # return [Highway::Compiler::Build::Output::Manifest]
         def build(sema_tree:, preset:)
 
           manifest = Build::Output::Manifest.new()
@@ -132,14 +134,14 @@ module Highway
             if last = memo.pop()
               if last.is_a?(Analyze::Tree::TextValueSegment) && segment.is_a?(Analyze::Tree::TextValueSegment)
                 memo + [Analyze::Tree::TextValueSegment.new(value: last.value + segment.value)]
-              else 
+              else
                 memo + [last, segment]
               end
             else
               [segment]
             end
           }
-          
+
           reduced
 
         end

@@ -18,7 +18,7 @@ module Highway
       # @param required [TrueClass, FalseClass] Whether the parameter is required.
       # @param type [Object] The parameter type.
       # @param default [Object] The default value.
-      # @param validate [Proc] A custom value validation proc.
+      # @param validate [Proc] A custom value validation block.
       def initialize(name:, required:, type:, default_value: nil, validate: nil)
         @name = name
         @required = required
@@ -34,15 +34,17 @@ module Highway
 
       # Type of the parameter.
       #
-      # @return [Object] 
+      # @return [Object]
       attr_reader :type
 
       # The default value to be used in case parameter is absent.
       #
-      # @return [Object, NilClass]
+      # @return [Object, nil]
       attr_reader :default_value
 
-      # @return [TureClass, FalseClass] Whether the parameter is required.
+      # Whether the parameter is required.
+      #
+      # @return [Boolean]
       def is_required?
         @required
       end
@@ -51,7 +53,7 @@ module Highway
       #
       # @param value [Object] A value to be valdiated.
       #
-      # @param [TrueClass, FalseClass] Whether the value is valid.
+      # @param [Boolean]
       def custom_validate(value)
         @custom_validate.call(value)
       end

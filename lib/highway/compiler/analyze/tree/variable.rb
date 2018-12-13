@@ -25,13 +25,19 @@ module Highway
             @preset = preset
           end
 
-          # @return [String] Name of the variable.
+          # Name of the variable.
+          #
+          # @return [String]
           attr_reader :name
 
-          # @return [Highway::Compiler::Analyze::Tree::Value] Value of the variable.
+          # Value of the variable.
+          #
+          # @return [Highway::Compiler::Analyze::Tree::Value]
           attr_reader :value
 
-          # @return [String] Parent preset of the variable.
+          # Parent preset of the variable.
+          #
+          # @return [String]
           attr_reader :preset
 
         end

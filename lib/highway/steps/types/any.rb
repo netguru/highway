@@ -20,13 +20,13 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [Object, NilClass]
+        # @return [Object, nil]
         def coerce_and_validate(value:)
           value
         end
 
       end
-      
+
     end
   end
 end

@@ -19,7 +19,7 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [String, NilClass]
+        # @return [String, nil]
         def coerce_and_validate(value:)
           case value
             when ::String then value
