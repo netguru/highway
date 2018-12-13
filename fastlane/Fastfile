@@ -1,0 +1,28 @@
+#
+# Fastfile
+# Copyright © 2018 Netguru S.A. All rights reserved.
+#
+
+fastlane_require "highway"
+
+desc "Run Highway."
+lane :highway do |options|
+
+  path = options[:highwayfile]
+  path ||= ENV["HIGHWAY_HIGHWAYFILE"]
+  path ||= "Highwayfile.yml"
+
+  preset = options[:preset]
+  preset ||= ENV["HIGHWAY_PRESET"]
+
+  main = Highway::Main.new(
+    option_path: path,
+    option_preset: preset,
+    fastlane_runner: runner,
+    fastlane_lane_context: lane_context,
+    mode: :lane,
+  )
+
+  main.run()
+
+end
