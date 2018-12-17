@@ -9,14 +9,13 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing an arbitrary Fastlane lane.
       class Lane < Step
 
-        def self.name()
+        def self.name
           "lane"
         end
 
-        def self.parameters()
+        def self.parameters
           [
             Parameter.new(
               name: "name",

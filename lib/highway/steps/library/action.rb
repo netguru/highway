@@ -9,7 +9,6 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing an arbittary Fastlane action.
       class Action < Step
 
         def self.name

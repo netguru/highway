@@ -9,14 +9,13 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing CocoaPods.
       class CocoaPods < Step
 
-        def self.name()
+        def self.name
           "cocoapods"
         end
 
-        def self.parameters()
+        def self.parameters
           [
             Parameter.new(
               name: "command",

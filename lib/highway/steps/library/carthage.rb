@@ -9,7 +9,6 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing Carthage.
       class Carthage < Step
 
         def self.name
