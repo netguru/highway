@@ -17,7 +17,7 @@ module Highway
         # Initialize an instance.
         #
         # @param element_type [Object] Type of inner elements.
-        def initialize(element_type:)
+        def initialize(element_type)
           @element_type = element_type
         end
 

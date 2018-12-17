@@ -12,11 +12,11 @@ module Highway
       # A step for executing Carthage.
       class Carthage < Step
 
-        def self.name()
+        def self.name
           "carthage"
         end
 
-        def self.parameters()
+        def self.parameters
           [
             Parameter.new(
               name: "command",
@@ -32,15 +32,15 @@ module Highway
             Parameter.new(
               name: "platforms",
               required: true,
-              type: Types::Array.new(element_type: Types::Enum.new("iOS", "macOS", "tvOS", "watchOS")),
+              type: Types::Array.new(Types::Enum.new("iOS", "macOS", "tvOS", "watchOS")),
             ),
           ]
         end
 
-        def self.run(parameters:, context:)
+        def self.run(parameters:, context:, artifact:)
 
           context.assert_executable_available!("carthage")
-          
+
           command = parameters["command"]
           platform = parameters["platforms"].join(",").gsub(%r(macOS), "Mac")
           token = parameters["github_token"]
@@ -49,8 +49,8 @@ module Highway
             "GITHUB_ACCESS_TOKEN" => token
           }
 
-          context.with_env(env) {
-            
+          context.with_modified_env(env) {
+
             context.run_action("carthage", options: {
               cache_builds: true,
               command: command,

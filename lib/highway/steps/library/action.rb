@@ -12,11 +12,11 @@ module Highway
       # A step for executing an arbittary Fastlane action.
       class Action < Step
 
-        def self.name()
+        def self.name
           "action"
         end
 
-        def self.parameters()
+        def self.parameters
           [
             Parameter.new(
               name: "name",
@@ -26,13 +26,13 @@ module Highway
             Parameter.new(
               name: "options",
               required: false,
-              type: Types::Dictionary.new(element_type: Types::Any.new()),
+              type: Types::Dictionary.new(Types::Any.new()),
               default_value: {},
             ),
           ]
         end
 
-        def self.run(parameters:, context:)
+        def self.run(parameters:, context:, artifact:)
           context.run_action(parameters["name"], options: parameters["options"])
         end
 

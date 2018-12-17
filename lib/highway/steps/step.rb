@@ -15,14 +15,14 @@ module Highway
       # Name of the step as it appears in configuration file.
       #
       # @return [String]
-      def self.name()
+      def self.name
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
       end
 
       # Parameters that this step recognizes.
       #
       # @return [Array<Highway::Steps::Parameter>]
-      def self.parameters()
+      def self.parameters
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
       end
 
@@ -30,9 +30,10 @@ module Highway
       #
       # @param parameters [Hash] Parameters of the step.
       # @param context [Highway::Runtime::Context] The runtime context.
+      # @param artifact [Highway::Runtime::Artifact] The current runtime artifact.
       #
       # @return [Void]
-      def self.run(parameters:, context:)
+      def self.run(parameters:, context:, artifact:)
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
       end
 

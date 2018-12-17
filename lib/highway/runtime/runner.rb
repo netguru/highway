@@ -6,6 +6,7 @@
 require "fastlane"
 
 require "highway/compiler/analyze/tree/root"
+require "highway/runtime/artifact"
 require "highway/runtime/context"
 require "highway/utilities"
 
@@ -27,7 +28,6 @@ module Highway
         @manifest = manifest
         @context = context
         @interface = interface
-        @metrics = Array.new()
       end
 
       # Run the build manifest.
@@ -79,13 +79,14 @@ module Highway
 
       def run_invocation(invocation:, errors:)
 
-        name = invocation.step_class.name
-        start = Time.now
-        result = nil
+        artifact = Artifact.new(invocation: invocation)
+
+        step_name = invocation.step_class.name
+        time_started = Time.now
 
         if errors.empty? || invocation.policy == :always
 
-          @interface.header_success("Running step: #{name}...")
+          @interface.header_success("Running step: #{step_name}...")
 
           begin
 
@@ -98,35 +99,35 @@ module Highway
               [name, coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
             }
 
-            invocation.step_class.run(parameters: coerced_parameters, context: @context)
+            invocation.step_class.run(
+              parameters: coerced_parameters,
+              context: @context,
+              artifact: artifact,
+            )
 
-            result = :success
+            artifact.result = :success
 
           rescue FastlaneCore::Interface::FastlaneException => error
 
             @interface.error(error.message)
             errors << {invocation: invocation, error: error}
 
-            result = :failure
+            artifact.result = :failure
 
           end
 
         else
 
-          @interface.header_warning("Skipping step: #{name}...")
-          @interface.warning("Skipping step '#{invocation.step_class.name}' because a previous step has failed.")
+          @interface.header_warning("Skipping step: #{step_name}...")
+          @interface.warning("Skipping step '#{step_name}' because a previous step has failed.")
 
-          result = :skip
+          artifact.result = :skip
 
         end
 
-        duration = (Time.now - start).round
+        artifact.duration = (Time.now - time_started).round
 
-        add_metric(
-          name: name,
-          result: result,
-          duration: duration,
-        )
+        @context.add_artifact(artifact)
 
       end
 
@@ -162,34 +163,26 @@ module Highway
         end
       end
 
-      def add_metric(name:, result:, duration:)
-        @metrics << {
-          name: name,
-          result: result,
-          duration: duration,
-        }
-      end
-
       def report_metrics()
 
-        rows = @metrics.each_with_index.map { |metric, index|
+        rows = @context.artifacts.each_with_index.map { |artifact, index|
 
-          status = case metric[:result]
+          status = case artifact.result
             when :success then (index + 1).to_s
             when :failure then "x"
             when :skip then "-"
           end
 
-          name = metric[:name]
+          name = artifact.invocation.step_class.name
 
-          minutes = (metric[:duration] / 60).floor
-          seconds = metric[:duration] % 60
+          minutes = (artifact.duration / 60).floor
+          seconds = artifact.duration % 60
 
           duration = "#{minutes}m #{seconds}s" if minutes > 0
           duration ||= "#{seconds}s"
 
           row = [status, name, duration].map { |text|
-            case metric[:result]
+            case artifact.result
               when :success then text.green
               when :failure then text.red.bold
               when :skip then text.yellow

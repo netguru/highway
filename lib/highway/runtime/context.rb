@@ -26,12 +26,18 @@ module Highway
         @fastlane_runner = fastlane_runner
         @fastlane_lane_context = fastlane_lane_context
         @interface = interface
+        @artifacts = Array.new()
       end
 
       # The interface.
       #
       # @return [Highway::Interface]
       attr_reader :interface
+
+      # All artifacts in the runtime context.
+      #
+      # @return [Array<Highway::Runtime::Artifact>]
+      attr_reader :artifacts
 
       # The Fastlane lane context.
       #
@@ -117,7 +123,7 @@ module Highway
       #
       # @param new_env [Hash] ENV variables to override.
       # @param &block [Proc] A block to execute.
-      def with_env(new_env, &block)
+      def with_modified_env(new_env, &block)
 
         old_env = Utilities::hash_map(new_env.keys) { |name|
           [name, ENV[name]]
@@ -133,6 +139,15 @@ module Highway
           ENV[name] = value
         }
 
+      end
+
+      # Add a runtime artifact to the context.
+      #
+      # @param artifact [Highway::Runtime::Artifact] The artifact.
+      #
+      # @return [Void]
+      def add_artifact(artifact)
+        @artifacts << artifact
       end
 
       private

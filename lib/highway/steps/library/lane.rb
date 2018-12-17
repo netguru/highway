@@ -26,13 +26,13 @@ module Highway
             Parameter.new(
               name: "options",
               required: false,
-              type: Types::Dictionary.new(element_type: Types::Any.new()),
+              type: Types::Dictionary.new(Types::Any.new()),
               default_value: {},
             ),
           ]
         end
 
-        def self.run(parameters:, context:)
+        def self.run(parameters:, context:, artifact:)
           context.run_lane(parameters["name"], options: parameters["options"])
         end
 

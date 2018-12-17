@@ -33,10 +33,10 @@ module Highway
           ]
         end
 
-        def self.run(parameters:, context:)
+        def self.run(parameters:, context:, artifact:)
 
           context.assert_gem_available!("cocoapods")
-          
+
           command = parameters["command"]
           update_specs_repo = parameters["update_specs_repo"]
 
