@@ -27,6 +27,7 @@ module Highway
         @fastlane_lane_context = fastlane_lane_context
         @interface = interface
         @artifacts = Array.new()
+        @env = Environment.new()
       end
 
       # The interface.
@@ -39,17 +40,15 @@ module Highway
       # @return [Array<Highway::Runtime::Artifact>]
       attr_reader :artifacts
 
+      # The environment of the runtime context.
+      #
+      # @return [Highway::Runtime::Environment]
+      attr_reader :env
+
       # The Fastlane lane context.
       #
       # @return [Hash]
       attr_reader :fastlane_lane_context
-
-      # Whether running in verbose mode.
-      #
-      # @return [Boolean]
-      def verbose?()
-        FastlaneCore::Globals::verbose?
-      end
 
       # Assert that a gem with specified name is available.
       #
