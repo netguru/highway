@@ -40,23 +40,25 @@ module Highway
       Dir.chdir(running_dir) do
 
         interface = Interface.new()
+        env = Runtime::Environment.new()
 
         registry = Steps::Registry.new_and_load_default_library()
 
         compiler = Compiler::Suite.new(
           registry: registry,
-          interface: interface
+          interface: interface,
         )
 
         manifest = compiler.compile(
           path: @option_path,
-          preset: @option_preset
+          preset: @option_preset,
         )
 
         context = Runtime::Context.new(
           fastlane_runner: @fastlane_runner,
           fastlane_lane_context: @fastlane_lane_context,
-          interface: interface
+          env: env,
+          interface: interface,
         )
 
         runner = Runtime::Runner.new(

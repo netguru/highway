@@ -21,24 +21,20 @@ module Highway
       #
       # @param fastlane_runner [Fastlane::Runner] The Fastlane runner.
       # @param fastlane_lane_context [Hash] The Fastlane lane context.
+      # @param env [Highway::Runtime::Environment] The runtime environment.
       # @param reporter [Highway::Interface] The interface.
-      def initialize(fastlane_runner:, fastlane_lane_context:, interface:)
+      def initialize(fastlane_runner:, fastlane_lane_context:, env:, interface:)
         @fastlane_runner = fastlane_runner
         @fastlane_lane_context = fastlane_lane_context
+        @env = env
         @interface = interface
         @artifacts = Array.new()
-        @env = Environment.new()
       end
 
       # The interface.
       #
       # @return [Highway::Interface]
       attr_reader :interface
-
-      # All artifacts in the runtime context.
-      #
-      # @return [Array<Highway::Runtime::Artifact>]
-      attr_reader :artifacts
 
       # The environment of the runtime context.
       #
@@ -49,6 +45,25 @@ module Highway
       #
       # @return [Hash]
       attr_reader :fastlane_lane_context
+
+      # All artifacts in the runtime context.
+      #
+      # @return [Array<Highway::Runtime::Artifact>]
+      attr_reader :artifacts
+
+      # Whether any of the previous artifacts failed.
+      #
+      # @return [Boolean]
+      def artifacts_any_failed?()
+        @artifacts.any? { |artifact| artifact.result == :failure }
+      end
+
+      # Total duration of all previous artifacts.
+      #
+      # @return [Numeric]
+      def artifacts_total_duration()
+        @artifacts.reduce(0) { |memo, artifact| memo + artifact.duration }
+      end
 
       # Assert that a gem with specified name is available.
       #
