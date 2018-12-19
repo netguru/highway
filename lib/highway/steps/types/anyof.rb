@@ -26,7 +26,8 @@ module Highway
         # Typecheck and coerce a value if possible.
         #
         # This method returns a typechecked and coerced value or `nil` if value
-        # has invalid type and can't be coerced.        #
+        # has invalid type and can't be coerced.
+        #
         # @param value [Object] A value.
         #
         # @return [Object, nil]
