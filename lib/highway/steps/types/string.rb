@@ -14,6 +14,15 @@ module Highway
 
         public
 
+        # Initialize an instance.
+        #
+        # @param regex [Regexp] A regular expression string must match.
+        #
+        # @return [Highway::Steps::Types::String]
+        def self.regex(regex)
+          self.new(validate: lambda { |value| regex ~= value })
+        end
+
         # Typecheck and coerce a value if possible.
         #
         # This method returns a typechecked and coerced value or `nil` if value
