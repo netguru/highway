@@ -1,5 +1,5 @@
 #
-# array.rb
+# anyof.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
@@ -9,32 +9,29 @@ module Highway
   module Steps
     module Types
 
-      # This class represents an array parameter type.
-      class Array < Types::Any
+      # This class represents a parameter type that's any of given types.
+      class AnyOf < Types::Any
 
         public
 
         # Initialize an instance.
         #
-        # @param element_type [Object] Type of inner elements.
+        # @param types [Object] Types. Order matters, first takes precedence.
         # @param validate [Proc] A custom value validation block.
-        def initialize(element_type, validate: nil)
+        def initialize(*types, validate: nil)
           super(validate: validate)
-          @element_type = element_type
+          @types = types
         end
 
         # Typecheck and coerce a value if possible.
         #
         # This method returns a typechecked and coerced value or `nil` if value
-        # has invalid type and can't be coerced.
-        #
+        # has invalid type and can't be coerced.        #
         # @param value [Object] A value.
         #
-        # @return [Array, nil]
+        # @return [Object, nil]
         def typecheck(value)
-          return nil unless value.kind_of?(::Array)
-          typechecked = value.map { |element| @element_type.typecheck_and_validate(element) }
-          typechecked if typechecked.all? { |element| !element.nil? }
+          @types.map { |type| typecheck_and_validate(value) }.find { |typechecked| typechecked != nil }
         end
 
       end

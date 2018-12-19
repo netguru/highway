@@ -8,6 +8,7 @@ require "fastlane"
 require "highway/compiler/analyze/tree/root"
 require "highway/runtime/artifact"
 require "highway/runtime/context"
+require "highway/runtime/environment"
 require "highway/utilities"
 
 module Highway
@@ -50,7 +51,7 @@ module Highway
             unless parameter.value.contains_env_variable_segments?
               definition = invocation.step_class.parameters.find { |definition| definition.name == parameter.name }
               value = evaluate_parameter(value: parameter.value)
-              coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)
+              typecheck_and_validate_parameter(definition: definition, value: value, invocation: invocation)
             end
           end
         end
@@ -96,7 +97,7 @@ module Highway
 
             coerced_parameters = Utilities::hash_map(evaluated_parameters) { |name, value|
               definition = invocation.step_class.parameters.find { |definition| definition.name == name }
-              [name, coerce_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
+              [name, typecheck_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
             }
 
             invocation.step_class.run(
@@ -151,10 +152,10 @@ module Highway
         end
       end
 
-      def coerce_and_validate_parameter(definition:, value:, invocation:)
+      def typecheck_and_validate_parameter(definition:, value:, invocation:)
         if value != nil
-          if (coerced = definition.type.coerce_and_validate(value: value))
-            coerced
+          if (typechecked = definition.type.typecheck_and_validate(value))
+            typechecked
           else
             @interface.fatal!("Invalid value: '#{value}' for parameter: '#{definition.name}' of step: '#{invocation.step_class.name}'.")
           end

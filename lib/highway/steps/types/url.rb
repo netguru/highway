@@ -1,5 +1,5 @@
 #
-# bool.rb
+# url.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
@@ -9,8 +9,8 @@ module Highway
   module Steps
     module Types
 
-      # This class represents a boolean parameter type.
-      class Bool < Types::Any
+      # This class represents an URL parameter type.
+      class Url < Types::String
 
         public
 
@@ -21,12 +21,11 @@ module Highway
         #
         # @param value [Object] A value.
         #
-        # @return [Boolean, nil]
+        # @return [URI, nil]
         def typecheck(value)
-          case value
-            when ::TrueClass, 1, "1", "true", "yes" then true
-            when ::FalseClass, 0, "0", "false", "no" then false
-          end
+          typechecked = super(value)
+          parsed = URI.parse(typechecked) rescue nil
+          parsed if parsed && parsed.kind_of?(URI::HTTP)
         end
 
       end
