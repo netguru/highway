@@ -9,7 +9,7 @@ module Highway
   module Steps
     module Library
 
-      class Carthage < Step
+      class CarthageStep < Step
 
         def self.name
           "carthage"

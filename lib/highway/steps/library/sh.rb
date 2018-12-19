@@ -9,8 +9,7 @@ module Highway
   module Steps
     module Library
 
-      # A step for executing an arbitrary shell command.
-      class Sh < Step
+      class ShStep < Step
 
         def self.name
           "sh"

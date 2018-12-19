@@ -9,7 +9,7 @@ module Highway
   module Steps
     module Library
 
-      class Action < Step
+      class ActionStep < Step
 
         def self.name
           "action"

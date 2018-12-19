@@ -9,7 +9,7 @@ module Highway
   module Steps
     module Library
 
-      class CocoaPods < Step
+      class CocoaPodsStep < Step
 
         def self.name
           "cocoapods"
