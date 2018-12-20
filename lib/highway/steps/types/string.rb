@@ -20,7 +20,7 @@ module Highway
         #
         # @return [Highway::Steps::Types::String]
         def self.regex(regex)
-          self.new(validate: lambda { |value| regex ~= value })
+          self.new(validate: lambda { |value| regex =~ value })
         end
 
         # Typecheck and coerce a value if possible.
