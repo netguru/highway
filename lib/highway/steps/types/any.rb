@@ -41,7 +41,7 @@ module Highway
         #
         # @return [Boolean]
         def validate(value)
-          true if @validate == nil
+          return true if @validate == nil
           @validate.call(value)
         end
 
