@@ -4,11 +4,12 @@
 #
 
 require "fastlane"
+require "fileutils"
 
 require "highway/compiler/analyze/tree/root"
-require "highway/runtime/artifact"
 require "highway/runtime/context"
 require "highway/runtime/environment"
+require "highway/runtime/report"
 require "highway/utilities"
 
 module Highway
@@ -39,8 +40,40 @@ module Highway
       # This method catches exceptions thrown inside steps in order to maintain
       # control over the execution policy.
       def run()
+
+        # Validate invocations before running them. At this point we're able
+        # to evaluate non-environment variables, typecheck and validate the
+        # parameters.
+
         validate_invocations()
+
+        # Print the header, similar to Fastlane's "driving the lane".
+
+        @interface.success("Running Highway preset '#{@manifest.preset}' 🏎")
+
+        # Prepare the artifacts directory. If it doesn't exist, it's created at
+        # this point. If it exist, it's removed and re-created.
+
+        prepare_artifacts_dir()
+
+        # Run invocations one-by-one.
+
         run_invocations()
+
+        # Print the metrics table containing the status of invocation, its step
+        # name and a duration it took.
+
+        report_metrics()
+
+        # Print a summary depending on the invocation reports.
+
+        if !@context.reports_any_failed?
+          @interface.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
+        else
+          clear_and_report_fastlane_lane_context()
+          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log.")
+        end
+
       end
 
       private
@@ -57,35 +90,26 @@ module Highway
         end
       end
 
-      def run_invocations()
-
-        @interface.success("Running Highway preset '#{@manifest.preset}' 🏎")
-
-        errors = []
-
-        @manifest.invocations.each do |invocation|
-          run_invocation(invocation: invocation, errors: errors)
-        end
-
-        report_metrics()
-
-        if errors.empty?
-          @interface.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
-        else
-          clear_and_report_fastlane_lane_context()
-          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log.")
-        end
-
+      def prepare_artifacts_dir()
+        FileUtils.remove_entry(@context.artifacts_dir) if File.exist?(@context.artifacts_dir)
+        FileUtils.mkdir(@context.artifacts_dir)
       end
 
-      def run_invocation(invocation:, errors:)
+      def run_invocations()
+        @manifest.invocations.each do |invocation|
+          report = run_invocation(invocation: invocation)
+          @context.add_report(report)
+        end
+      end
 
-        artifact = Artifact.new(invocation: invocation)
+      def run_invocation(invocation:)
+
+        report = Report.new(invocation: invocation, context: @context)
 
         step_name = invocation.step_class.name
         time_started = Time.now
 
-        if errors.empty? || invocation.policy == :always
+        if !@context.reports_any_failed? || invocation.policy == :always
 
           @interface.header_success("Running step: #{step_name}...")
 
@@ -103,32 +127,32 @@ module Highway
             invocation.step_class.run(
               parameters: coerced_parameters,
               context: @context,
-              artifact: artifact,
+              report: report,
             )
 
-            artifact.result = :success
+            report.result = :success
 
           rescue FastlaneCore::Interface::FastlaneException => error
 
             @interface.error(error.message)
-            errors << {invocation: invocation, error: error}
 
-            artifact.result = :failure
+            report.result = :failure
+            report.error = error
 
           end
 
         else
 
           @interface.header_warning("Skipping step: #{step_name}...")
-          @interface.warning("Skipping step '#{step_name}' because a previous step has failed.")
+          @interface.warning("Skipping because a previous step has failed.")
 
-          artifact.result = :skip
+          report.result = :skip
 
         end
 
-        artifact.duration = (Time.now - time_started).round
+        report.duration = (Time.now - time_started).round
 
-        @context.add_artifact(artifact)
+        report
 
       end
 
@@ -166,24 +190,24 @@ module Highway
 
       def report_metrics()
 
-        rows = @context.artifacts.each_with_index.map { |artifact, index|
+        rows = @context.reports.each.map { |report|
 
-          status = case artifact.result
-            when :success then (index + 1).to_s
+          status = case report.result
+            when :success then report.invocation.index.to_s
             when :failure then "x"
             when :skip then "-"
           end
 
-          name = artifact.invocation.step_class.name
+          name = report.invocation.step_class.name
 
-          minutes = (artifact.duration / 60).floor
-          seconds = artifact.duration % 60
+          minutes = (report.duration / 60).floor
+          seconds = report.duration % 60
 
           duration = "#{minutes}m #{seconds}s" if minutes > 0
           duration ||= "#{seconds}s"
 
           row = [status, name, duration].map { |text|
-            case artifact.result
+            case report.result
               when :success then text.green
               when :failure then text.red.bold
               when :skip then text.yellow

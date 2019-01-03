@@ -32,7 +32,7 @@ module Highway
           ]
         end
 
-        def self.run(parameters:, context:, artifact:)
+        def self.run(parameters:, context:, report:)
 
           context.assert_gem_available!("cocoapods")
 

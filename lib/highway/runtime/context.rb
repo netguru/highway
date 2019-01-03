@@ -28,7 +28,7 @@ module Highway
         @fastlane_lane_context = fastlane_lane_context
         @env = env
         @interface = interface
-        @artifacts = Array.new()
+        @reports = Array.new()
       end
 
       # The interface.
@@ -46,23 +46,30 @@ module Highway
       # @return [Hash]
       attr_reader :fastlane_lane_context
 
-      # All artifacts in the runtime context.
+      # All reports in the runtime context.
       #
-      # @return [Array<Highway::Runtime::Artifact>]
-      attr_reader :artifacts
+      # @return [Array<Highway::Runtime::Report>]
+      attr_reader :reports
 
-      # Whether any of the previous artifacts failed.
+      # The path to directory containing artifacts.
       #
-      # @return [Boolean]
-      def artifacts_any_failed?()
-        @artifacts.any? { |artifact| artifact.result == :failure }
+      # @return [String]
+      def artifacts_dir
+        File.join(File.expand_path(FastlaneCore::FastlaneFolder.path), "highway")
       end
 
-      # Total duration of all previous artifacts.
+      # Whether any of the previous reports failed.
+      #
+      # @return [Boolean]
+      def reports_any_failed?
+        @reports.any? { |report| report.result == :failure }
+      end
+
+      # Total duration of all previous reports.
       #
       # @return [Numeric]
-      def artifacts_total_duration()
-        @artifacts.reduce(0) { |memo, artifact| memo + artifact.duration }
+      def reports_total_duration
+        @reports.reduce(0) { |memo, report| memo + report.duration }
       end
 
       # Assert that a gem with specified name is available.
@@ -84,7 +91,7 @@ module Highway
       # Whether `bundle exec` is available and should be used if possible.
       #
       # @return [Boolean]
-      def should_use_bundle_exec?()
+      def should_use_bundle_exec?
         return File.exist?("Gemfile")
       end
 
@@ -155,13 +162,13 @@ module Highway
 
       end
 
-      # Add a runtime artifact to the context.
+      # Add a runtime report to the context.
       #
-      # @param artifact [Highway::Runtime::Artifact] The artifact.
+      # @param report [Highway::Runtime::Report] The report.
       #
       # @return [Void]
-      def add_artifact(artifact)
-        @artifacts << artifact
+      def add_report(report)
+        @reports << report
       end
 
       private

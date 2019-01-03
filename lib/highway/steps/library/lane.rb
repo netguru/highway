@@ -31,7 +31,7 @@ module Highway
           ]
         end
 
-        def self.run(parameters:, context:, artifact:)
+        def self.run(parameters:, context:, report:)
           context.run_lane(parameters["name"], options: parameters["options"])
         end
 

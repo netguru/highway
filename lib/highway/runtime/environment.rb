@@ -10,7 +10,7 @@ module Highway
   module Runtime
 
     # This class wraps `ENV` and additionaly provides wrappers and shortcuts
-    # to the most interesting values in the environment.
+    # to the most interesting values in the runtime environment.
     class Environment
 
       # Get value for given key in the `ENV`.

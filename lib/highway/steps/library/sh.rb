@@ -25,7 +25,7 @@ module Highway
           ]
         end
 
-        def self.run(parameters:, context:, artifact:)
+        def self.run(parameters:, context:, report:)
           context.run_sh(parameters["command"])
         end
 

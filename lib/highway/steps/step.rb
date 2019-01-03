@@ -30,10 +30,10 @@ module Highway
       #
       # @param parameters [Hash] Parameters of the step.
       # @param context [Highway::Runtime::Context] The runtime context.
-      # @param artifact [Highway::Runtime::Artifact] The current runtime artifact.
+      # @param report [Highway::Runtime::Report] The current runtime report.
       #
       # @return [Void]
-      def self.run(parameters:, context:, artifact:)
+      def self.run(parameters:, context:, report:)
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
       end
 
