@@ -115,6 +115,10 @@ module Highway
 
           begin
 
+            default_parameters = Utilities::hash_map(invocation.step_class.parameters) { |parameter|
+              [parameter.name, parameter.default_value]
+            }
+
             evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
               [parameter.name, evaluate_parameter(value: parameter.value)]
             }
@@ -124,8 +128,10 @@ module Highway
               [name, typecheck_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
             }
 
+            parameters = default_parameters.merge(coerced_parameters)
+
             invocation.step_class.run(
-              parameters: coerced_parameters,
+              parameters: parameters,
               context: @context,
               report: report,
             )
@@ -178,7 +184,7 @@ module Highway
 
       def typecheck_and_validate_parameter(definition:, value:, invocation:)
         if value != nil
-          if (typechecked = definition.type.typecheck_and_validate(value))
+          if (typechecked = definition.type.typecheck_and_validate(value)) && definition.validate(typechecked)
             typechecked
           else
             @interface.fatal!("Invalid value: '#{value}' for parameter: '#{definition.name}' of step: '#{invocation.step_class.name}'.")
