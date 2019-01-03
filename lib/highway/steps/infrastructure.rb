@@ -3,6 +3,8 @@
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
+require "fastlane"
+
 require "highway/steps/parameter"
 require "highway/steps/step"
 require "highway/steps/types/any"

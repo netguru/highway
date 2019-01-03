@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
 
   # Dependencies
 
-  spec.add_dependency "fastlane"
+  spec.add_dependency "fastlane", ">= 2.0.0", "<= 3.0.0"
+  spec.add_dependency "uri-ssh_git", ">= 2.0.0", "<= 3.0.0"
 
 end

@@ -39,6 +39,25 @@ module Highway
       # @return [Hash]
       attr_reader :data
 
+      # Get custom data value for given key.
+      #
+      # @param key [String] A key.
+      #
+      # @return [Object, nil]
+      def [](key)
+        @data[key]
+      end
+
+      # Set custom data value for given key.
+      #
+      # @param key [String] A key.
+      # @param value [Object, nil] A value.
+      #
+      # @return [Void]
+      def []=(key, value)
+        @data[key] = value
+      end
+
     end
 
   end
