@@ -16,21 +16,15 @@ module Highway
 
         # Initialize an instance.
         #
-        # The first variadic argument accepts hashes containing `tag` and
-        # `type`. Tags are used to later denote which type the value falls to.
+        # The variadic argument accepts types keyed by a tag symbol. Tags are
+        # used to later denote which type the value falls to.
         #
         # Consider a step which defines the following parameter:
         #
         # ```
         # Types::AnyOf(
-        #   {
-        #     tag: :channel,
-        #     type: Types::String.regex(/#\w+/)
-        #   },
-        #   {
-        #     tag: :user,
-        #     type: Types::String.regex(/@\w+/)
-        #   },
+        #   channel: Types::String.regex(/#\w+/),
+        #   user: Types::String.regex(/@\w+/),
         # )
         # ```
         #
@@ -45,9 +39,8 @@ module Highway
         # the value.
         #
         # @param type_defs [Array] Type definitions. First match wins.
-        # @param validate [Proc] A custom value validation block.
-        def initialize(*type_defs, validate: nil)
-          super(validate: validate)
+        def initialize(**type_defs)
+          super(validate: nil)
           @type_defs = type_defs
         end
 
@@ -60,7 +53,7 @@ module Highway
         #
         # @return [Object, nil]
         def typecheck(value)
-          typechecked_defs = @type_defs.map { |type_def| {tag: typedef[:tag], value: typedef[:type].typecheck_and_validate(value) } }
+          typechecked_defs = @type_defs.map { |tag, type| {tag: tag, value: type.typecheck_and_validate(value) } }
           typechecked_defs.find { |typechecked_def| typechecked_def[:value] != nil }
         end
 
