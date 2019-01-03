@@ -31,7 +31,7 @@ module Highway
             Parameter.new(
               name: "platforms",
               required: true,
-              type: Types::Array.new(Types::Enum.new("iOS", "macOS", "tvOS", "watchOS")),
+              type: Types::Set.new(Types::Enum.new("iOS", "macOS", "tvOS", "watchOS")),
             ),
           ]
         end
@@ -41,7 +41,7 @@ module Highway
           context.assert_executable_available!("carthage")
 
           command = parameters["command"]
-          platform = parameters["platforms"].join(",").gsub(%r(macOS), "Mac")
+          platform = parameters["platforms"].to_a.join(",").gsub(%r(macOS), "Mac")
           token = parameters["github_token"]
 
           env = {

@@ -55,7 +55,7 @@ module Highway
         # @return [Object, nil]
         def typecheck_and_validate(value)
           typechecked = typecheck(value)
-          typechecked if typechecked && validate(typechecked)
+          typechecked if !typechecked.nil? && validate(typechecked)
         end
 
       end

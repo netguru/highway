@@ -35,7 +35,7 @@ module Highway
         def typecheck(value)
           return nil unless value.is_a?(::Hash)
           typechecked = Utilities::hash_map(value) { |key, element| [key, @element_type.typecheck_and_validate(element)] }
-          typechecked if coerced.values.all? { |element| !element.nil? }
+          typechecked if typechecked.values.all? { |element| !element.nil? }
         end
 
       end
