@@ -70,7 +70,7 @@ module Highway
                   assert_value_type(step, expected: Hash, keypath: [stage, preset, step_index])
                   assert_value_length(step, expected: 1, keypath: [stage, preset, step_index])
                   assert_value_type(step.values.first, expected: Hash, keypath: [stage, preset, step.keys.first])
-                  parse_tree.add_step(name: step.keys.first, parameters: step.values.first, preset: preset, stage: stage, index: step_index)
+                  parse_tree.add_step(index: step_index, name: step.keys.first, parameters: step.values.first, preset: preset, stage: stage)
                 end
               end
             end

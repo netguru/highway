@@ -41,10 +41,10 @@ module Highway
 
           sema_tree = Analyze::Tree::Root.new()
 
-          sema_tree.add_stage(name: "bootstrap", policy: :normal, index: 0)
-          sema_tree.add_stage(name: "test", policy: :normal, index: 1)
-          sema_tree.add_stage(name: "deploy", policy: :normal, index: 2)
-          sema_tree.add_stage(name: "report", policy: :always, index: 3)
+          sema_tree.add_stage(index: 0, name: "bootstrap", policy: :normal, )
+          sema_tree.add_stage(index: 1, name: "test", policy: :normal)
+          sema_tree.add_stage(index: 2, name: "deploy", policy: :normal)
+          sema_tree.add_stage(index: 3, name: "report", policy: :always)
 
           sema_tree.default_preset = "default"
 
@@ -153,8 +153,7 @@ module Highway
           parse_tree.steps.each do |step|
             klass = @registry.get_by_name(step.name)
             parameters = step.parameters.map { |name, value| Tree::Parameter.new(name: name, value: segmentize_value(value)) }
-            policy = step.stage == "report" ? :always : :normal
-            sema_tree.add_step(name: step.name, step_class: klass, parameters: parameters, stage: step.stage, preset: step.preset, index: step.index, policy: policy)
+            sema_tree.add_step(index: step.index, name: step.name, step_class: klass, parameters: parameters, stage: step.stage, preset: step.preset)
           end
         end
 

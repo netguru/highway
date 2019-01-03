@@ -54,15 +54,15 @@ module Highway
 
           # Add a step to the tree.
           #
+          # @param index [Integer] Index of step in its scope.
           # @param name [String] Name of the step.
           # @param parameters [Hash] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Integer] Index of step in its scope.
           #
           # @return [Void]
           def add_step(name:, parameters:, preset:, stage:, index:)
-            @steps << Step.new(name: name, parameters: parameters, preset: preset, stage: stage, index: index)
+            @steps << Step.new(index: index, name: name, parameters: parameters, preset: preset, stage: stage)
           end
 
         end

@@ -16,12 +16,12 @@ module Highway
 
           # Initialize an instance.
           #
+          # @param index [Integer] Index of step in its scope.
           # @param name [String] Name of the step.
           # @param parameters [Hash] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Integer] Index of step in its scope.
-          def initialize(name:, parameters:, preset:, stage:, index:)
+          def initialize(index:, name:, parameters:, preset:, stage:)
             @name = name
             @parameters = parameters
             @preset = preset

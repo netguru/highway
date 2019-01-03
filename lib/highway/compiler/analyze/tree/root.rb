@@ -61,28 +61,28 @@ module Highway
 
           # Add a step to the tree.
           #
+          # @param index [Integer] Index of step in its scope.
           # @param name [String] Name of the step.
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Integer] Index of step in its scope.
           #
           # @return [Void]
-          def add_step(name:, step_class:, parameters:, preset:, stage:, index:, policy:)
-            @steps << Step.new(name: name, step_class: step_class, parameters: parameters, preset: preset, stage: stage, index: index)
+          def add_step(index:, name:, step_class:, parameters:, preset:, stage:)
+            @steps << Step.new(index: index, name: name, step_class: step_class, parameters: parameters, preset: preset, stage: stage)
           end
 
 
           # Add a stage to the tree.
           #
+          # @param index [Integer] Index of the stage.
           # @param name [String] Name of the stage.
           # @param policy [Symbol] Execution policy of the stage.
-          # @param index [Integer] Index of the stage.
           #
           # @return [Void]
-          def add_stage(name:, policy:, index:)
-            @stages << Stage.new(name: name, policy: policy, index: index)
+          def add_stage(index:, name:, policy:)
+            @stages << Stage.new(index: index, name: name, policy: policy)
           end
 
         end

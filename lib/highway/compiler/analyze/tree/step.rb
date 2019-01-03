@@ -16,20 +16,25 @@ module Highway
 
           # Initialize an instance.
           #
+          # @param index [Integer] Index of step in its scope.
           # @param name [String] Name of the step.
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
-          # @param index [Integer] Index of step in its scope.
-          def initialize(name:, step_class:, parameters:, preset:, stage:, index:)
+          def initialize(index:, name:, step_class:, parameters:, preset:, stage:)
+            @index = index
             @name = name
             @step_class = step_class
             @parameters = parameters
             @preset = preset
             @stage = stage
-            @index = index
           end
+
+          # Index of step in its scope.
+          #
+          # @return [Integer]
+          attr_reader :index
 
           # Name of the step.
           #
@@ -55,11 +60,6 @@ module Highway
           #
           # @return [String]
           attr_reader :stage
-
-          # Index of step in its scope.
-          #
-          # @return [Integer]
-          attr_reader :index
 
         end
 

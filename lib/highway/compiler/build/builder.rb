@@ -92,10 +92,10 @@ module Highway
         end
 
         def build_invocations(stages:, variables:, steps:, manifest:)
-          steps.each do |step|
+          steps.each_with_index do |step, index|
             stage = stages.find { |stage| stage.name == step.stage }
             parameters = step.parameters.map { |parameter| Analyze::Tree::Parameter.new(name: parameter.name, value: build_value(value: parameter.value, variables: variables)) }
-            manifest.add_invocation(step_class: step.step_class, parameters: parameters, policy: stage.policy)
+            manifest.add_invocation(index: index + 1, step_class: step.step_class, parameters: parameters, policy: stage.policy)
           end
         end
 

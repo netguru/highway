@@ -33,13 +33,14 @@ module Highway
 
           # Add an invocation to the manifest.
           #
+          # @param index [Integer] Index of invocation, 1-based.
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step invocation.
           # @param policy [:normal, :always] Execution policy of the step invocation.
           #
           # @return [Void]
-          def add_invocation(step_class:, parameters:, policy:)
-            @invocations << Invocation.new(step_class: step_class, parameters: parameters, policy: policy)
+          def add_invocation(index:, step_class:, parameters:, policy:)
+            @invocations << Invocation.new(index: index, step_class: step_class, parameters: parameters, policy: policy)
           end
 
         end
