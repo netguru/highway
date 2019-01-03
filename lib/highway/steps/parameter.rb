@@ -24,7 +24,8 @@ module Highway
         @required = required
         @type = type
         @default_value = default_value
-        @custom_validate = validate || lambda { |value| true }
+        @validate = validate || lambda { |value| true }
+        validate_default_value()
       end
 
       # Name of the parameter.
@@ -54,8 +55,17 @@ module Highway
       # @param value [Object] A value to be valdiated.
       #
       # @param [Boolean]
-      def custom_validate(value)
-        @custom_validate.call(value)
+      def validate(value)
+        @validate.call(value)
+      end
+
+      private
+
+      def validate_default_value()
+        return unless @default_value != nil
+        typechecked = @type.typecheck_and_validate(@default_value)
+        valid = @validate.call(typechecked) if typechecked
+        raise ArgumentError.new("default_value does not pass type checking and validation") if typechecked == nil || valid == false
       end
 
     end
