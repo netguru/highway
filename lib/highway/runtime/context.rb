@@ -31,10 +31,7 @@ module Highway
         @reports = Array.new()
       end
 
-      # The interface.
-      #
-      # @return [Highway::Interface]
-      attr_reader :interface
+      # @!group Context and environment
 
       # The environment of the runtime context.
       #
@@ -46,16 +43,56 @@ module Highway
       # @return [Hash]
       attr_reader :fastlane_lane_context
 
-      # All reports in the runtime context.
+      # The interface.
       #
-      # @return [Array<Highway::Runtime::Report>]
-      attr_reader :reports
+      # @return [Highway::Interface]
+      attr_reader :interface
 
       # The path to directory containing artifacts.
       #
       # @return [String]
       def artifacts_dir
+
         File.join(File.expand_path(FastlaneCore::FastlaneFolder.path), "highway")
+      end
+
+      # Execute the given block in the scope of overridden ENV variables. After
+      # that, old values will be restored.
+      #
+      # @param new_env [Hash] ENV variables to override.
+      # @param &block [Proc] A block to execute.
+      def with_modified_env(new_env, &block)
+
+        old_env = Utilities::hash_map(new_env.keys) { |name|
+          [name, ENV[name]]
+        }
+
+        new_env.each_pair { |name, value|
+          ENV[name] = value
+        }
+
+        block.call()
+
+        old_env.each_pair { |name, value|
+          ENV[name] = value
+        }
+
+      end
+
+      # @!group Reports
+
+      # All reports in the runtime context.
+      #
+      # @return [Array<Highway::Runtime::Report>]
+      attr_reader :reports
+
+      # Add a runtime report to the context.
+      #
+      # @param report [Highway::Runtime::Report] The report.
+      #
+      # @return [Void]
+      def add_report(report)
+        @reports << report
       end
 
       # Whether any of the previous reports failed.
@@ -68,9 +105,18 @@ module Highway
       # Total duration of all previous reports.
       #
       # @return [Numeric]
-      def reports_total_duration
+      def duration_so_far
         @reports.reduce(0) { |memo, report| memo + report.duration }
       end
+
+      # Reports containing information about tests.
+      #
+      # @return [Array<Highway::Runtime::Report>]
+      def test_reports
+        @reports.select { |report| report[:test] != nil }
+      end
+
+      # @!group Assertions
 
       # Assert that a gem with specified name is available.
       #
@@ -88,12 +134,7 @@ module Highway
         end
       end
 
-      # Whether `bundle exec` is available and should be used if possible.
-      #
-      # @return [Boolean]
-      def should_use_bundle_exec?
-        return File.exist?("Gemfile")
-      end
+      # @!group Interfacing with Fastlane
 
       # Run a Fastlane lane.
       #
@@ -131,44 +172,24 @@ module Highway
 
       end
 
+      # @!group Interfacing with shell
+
+      # Whether `bundle exec` is available and should be used if possible.
+      #
+      # @return [Boolean]
+      def should_use_bundle_exec?
+        return File.exist?("Gemfile")
+      end
+
       # Run a shell command.
       #
       # @param command [String, Array] A shell command.
+      # @param bundle_exec [Boolean] Whether to use `bundle exec` if possible.
+      # @param silent [Boolean] Whether to run the command silently.
       # @param on_error [Proc] Called if command exits with a non-zero code.
-      def run_sh(command, rescue_error: nil)
-        Fastlane::Actions.sh(command, error_callback: rescue_error)
-      end
-
-      # Execute the given block in the scope of overridden ENV variables. After
-      # that, old values will be restored.
-      #
-      # @param new_env [Hash] ENV variables to override.
-      # @param &block [Proc] A block to execute.
-      def with_modified_env(new_env, &block)
-
-        old_env = Utilities::hash_map(new_env.keys) { |name|
-          [name, ENV[name]]
-        }
-
-        new_env.each_pair { |name, value|
-          ENV[name] = value
-        }
-
-        block.call()
-
-        old_env.each_pair { |name, value|
-          ENV[name] = value
-        }
-
-      end
-
-      # Add a runtime report to the context.
-      #
-      # @param report [Highway::Runtime::Report] The report.
-      #
-      # @return [Void]
-      def add_report(report)
-        @reports << report
+      def run_sh(command, bundle_exec: false, silent: false, rescue_error: nil)
+        command = ["bundle exec", command].flatten if bundle_exec && should_use_bundle_exec?
+        Fastlane::Actions.sh(command, log: !silent, error_callback: rescue_error)
       end
 
       private
