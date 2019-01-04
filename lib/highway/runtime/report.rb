@@ -70,15 +70,8 @@ module Highway
       # @param name [String] An artifact file name.
       #
       # @return [String]
-      def prepare_artifact_file(name)
+      def prepare_artifact(name)
         File.join(@context.artifacts_dir, "#{invocation.identifier}-#{name}")
-      end
-
-      # Prepare an artifact temporary directory and return its path.
-      #
-      # @return [String]
-      def prepare_artifact_temp_dir()
-        Dir.mktmpdir()
       end
 
     end
