@@ -27,7 +27,8 @@ module Highway
         # @return [Set, nil]
         def typecheck(value)
           typechecked_array = super(value)
-          typechecked_set = ::Set.new(typechecked_array) rescue nil
+          return nil if typechecked_array == nil
+          typechecked_set = ::Set.new(typechecked_array)
           typechecked_set if typechecked_set.count == typechecked_array.count
         end
 
