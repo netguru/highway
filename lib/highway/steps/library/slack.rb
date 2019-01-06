@@ -66,9 +66,12 @@ module Highway
             attachment[:fallback] ||= attachment.fetch(:fields, []).reduce([]) { |memo, field| memo + ["#{field[:title]}: #{field[:value]}."] }.join(" ")
           }
 
-          notifier = Slack::Notifier.new(webhook) do
-            middleware :format_message, :format_attachments
-          end
+          attachments.each { |attachment|
+            attachment[:fields].each { |field| field[:value] = Slack::Notifier::Util::LinkFormatter.format(field[:value]) }
+            attachment[:fallback] = Slack::Notifier::Util::LinkFormatter.format(attachment[:fallback])
+          }
+
+          notifier = Slack::Notifier.new(webhook)
 
           notifier.post({
             username: username,
