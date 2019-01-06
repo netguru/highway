@@ -86,26 +86,81 @@ module Highway
 
         def self.generate_build_attachment(context)
 
-          build_title = context.reports_any_failed? ? "Build failed" : "Build succeeded"
+          # Generate main field containing information about build status
+          # and its identifier.
 
-          build_text = "[##{context.env.ci_build_number}](#{context.env.ci_build_url})" if context.env.ci?
-          build_text ||= "(local build)"
+          main_title = context.reports_any_failed? ? "Build failed" : "Build succeeded"
 
-          duration_value = context.duration_so_far
-          duration_text = "#{(duration_value.to_f / 60).ceil} minutes" if duration_value > 60
-          duration_text ||= "#{duration_value} seconds"
+          if context.env.ci?
+            if context.env.ci_build_number != nil
+              if context.env.ci_build_url != nil
+                main_value = "[##{context.env.ci_build_number}](#{context.env.ci_build_url})"
+              else
+                main_value = "##{context.env.ci_build_number}"
+              end
+            else
+              main_value = "(unknown build)"
+            end
+          else
+            main_value = "(local build)"
+          end
 
-          pr_text = "[##{context.env.git_pr_number}](#{context.env.git_pr_url})" if [:pr].include?(context.env.ci_trigger)
+          # Generate duration field, rounding and ceiling it to minutes, if
+          # possible.
 
-          commit_text = "#{context.env.git_commit_hash.substr(0, 7)}: #{context.env.git_commit_message}" if [:pr, :push].include?(context.env.ci_trigger)
+          duration_title = "Duration"
+
+          if context.duration_so_far > 60
+            duration_value = "#{(context.duration_so_far.to_f / 60).ceil} minutes"
+          else
+            duration_value = "#{context.duration_so_far} seconds"
+          end
+
+          # Generate pull request field, containing number, title and a URL,
+          # if possible.
+
+          pr_title = "Pull Request"
+
+          if context.env.ci_trigger == :pr && context.env.git_pr_number != nil
+            if context.env.git_pr_url != nil
+              if context.env.git_pr_title != nil
+                pr_value = "[##{context.env.git_pr_number}: #{context.env.git_pr_title}](#{context.env.git_pr_url})"
+              else
+                pr_value = "[##{context.env.git_pr_number}](#{context.env.git_pr_url})"
+              end
+            else
+              if context.env.git_pr_title != nil
+                pr_value = "##{context.env.git_pr_number}: #{context.env.git_pr_title}"
+              else
+                pr_value = "##{context.env.git_pr_number}"
+              end
+            end
+          end
+
+          # Generate commit field, containing hash, message and a URL, if
+          # possible.
+
+          commit_title = "Commit"
+
+          if context.env.git_commit_hash != nil
+            if context.env.git_commit_message != nil
+              commit_value = "#{context.env.git_commit_hash[0,7]}: #{context.env.git_commit_message}"
+            else
+              commit_value = "#{context.env.git_commit_hash}"
+            end
+          end
+
+          # Infer the attachment color.
 
           attachment_color = context.reports_any_failed? ? "danger" : "good"
 
+          # Assemble the attachment.
+
           attachment_fields = []
-          attachment_fields << {title: build_title, value: build_text, short: true}
-          attachment_fields << {title: "Duration", value: duration_text, short: true}
-          attachment_fields << {title: "Pull Request", value: pr_text, short: false} if pr_text != nil
-          attachment_fields << {title: "Commit", value: commit_text, short: false} if commit_text != nil
+          attachment_fields << {title: main_title, value: main_value, short: true} if main_value != nil
+          attachment_fields << {title: duration_title, value: duration_value, short: true} if duration_value != nil
+          attachment_fields << {title: pr_title, value: pr_value, short: false} if pr_value != nil
+          attachment_fields << {title: commit_title, value: commit_value, short: false} if commit_value != nil
 
           {
             color: attachment_color,
@@ -195,7 +250,7 @@ module Highway
           # Assemble the attachment.
 
           attachment_fields = []
-          attachment_fields << {title: main_title, value: main_value, short: false}
+          attachment_fields << {title: main_title, value: main_value, short: false} if main_value != nil
           attachment_fields << {title: errors_title, value: errors_value, short: false} if errors_value != nil
           attachment_fields << {title: failures_title, value: failures_value, short: false} if failures_value != nil
 
