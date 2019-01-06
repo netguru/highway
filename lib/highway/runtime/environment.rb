@@ -121,7 +121,7 @@ module Highway
       def ci_trigger
         if ci_service == :bitrise
           return :tag if include_nonempty?("BITRISE_GIT_TAG")
-          return :pr if include_nonempty?("BITRISEIO_PULL_REQUEST_REPOSITORY_URL")
+          return :pr if include_nonempty?("BITRISE_PULL_REQUEST")
           return :push if include_nonempty?("BITRISE_GIT_BRANCH")
           return :manual
         elsif ci_service == :circle
@@ -165,7 +165,7 @@ module Highway
       # @return [String, nil]
       def git_commit_hash
         case ci_service
-          when :bitrise then find_nonempty("BITRISE_GIT_COMMIT")
+          when :bitrise then find_nonempty("GIT_CLONE_COMMIT_HASH")
           when :circle then find_nonempty("CIRCLE_SHA1")
           when :travis then find_nonempty("TRAVIS_COMMIT")
           else sahe_sh("git", "rev-parse HEAD")
@@ -177,7 +177,7 @@ module Highway
       # @return [String, nil]
       def git_commit_message
         case ci_service
-          when :bitrise then find_nonempty("BITRISE_GIT_MESSAGE")
+          when :bitrise then find_nonempty("GIT_CLONE_COMMIT_MESSAGE_SUBJECT")
           when :travis then find_nonempty("TRAVIS_COMMIT_MESSAGE")
           else safe_sh("git", "log -1 --pretty=%B")
         end
@@ -208,7 +208,7 @@ module Highway
       # @return [String, nil]
       def git_pr_source_branch
         case ci_service
-          when :bitrise then find_nonempty("BITRISEIO_PULL_REQUEST_HEAD_BRANCH")
+          when :bitrise then find_nonempty("BITRISE_GIT_BRANCH")
           when :travis then find_nonempty("TRAVIS_PULL_REQUEST_BRANCH")
         end
       end
@@ -230,6 +230,15 @@ module Highway
         case ci_service
           when :bitrise then find_nonempty("BITRISE_PULL_REQUEST")
           when :travis then find_nonempty("TRAVIS_PULL_REQUEST")
+        end
+      end
+
+      # Title of the Pull Request that is triggering CI.
+      #
+      # @return [String, nil]
+      def git_pr_title
+        case ci_service
+          when :bitrise then find_nonempty("BITRISE_GIT_MESSAGE")
         end
       end
 
