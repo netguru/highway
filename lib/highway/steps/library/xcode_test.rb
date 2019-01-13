@@ -1,6 +1,6 @@
 #
 # xcode_test.rb
-# Copyright © 2018 Netguru S.A. All rights reserved.
+# Copyright © 2019 Netguru S.A. All rights reserved.
 #
 
 require "highway/steps/infrastructure"
