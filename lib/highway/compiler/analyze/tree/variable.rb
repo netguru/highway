@@ -17,7 +17,7 @@ module Highway
           # Initialize an instance.
           #
           # @param name [String] Name of the variable.
-          # @param value [Highway::Compiler::Analyze::Tree::Value] Value of the variable.
+          # @param value [Highway::Compiler::Analyze::Tree::Values::*] Value of the variable.
           # @param preset [String] Parent preset of the variable.
           def initialize(name:, value:, preset:)
             @name = name
@@ -32,7 +32,7 @@ module Highway
 
           # Value of the variable.
           #
-          # @return [Highway::Compiler::Analyze::Tree::Value]
+          # @return [Highway::Compiler::Analyze::Tree::Values::*]
           attr_reader :value
 
           # Parent preset of the variable.

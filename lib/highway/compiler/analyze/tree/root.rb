@@ -3,11 +3,13 @@
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
-require "highway/compiler/analyze/tree/parameter"
-require "highway/compiler/analyze/tree/segment"
+require "highway/compiler/analyze/tree/segments/text"
+require "highway/compiler/analyze/tree/segments/variable"
 require "highway/compiler/analyze/tree/stage"
 require "highway/compiler/analyze/tree/step"
-require "highway/compiler/analyze/tree/value"
+require "highway/compiler/analyze/tree/values/array"
+require "highway/compiler/analyze/tree/values/hash"
+require "highway/compiler/analyze/tree/values/primitive"
 require "highway/compiler/analyze/tree/variable"
 
 module Highway
@@ -51,7 +53,7 @@ module Highway
           # Add a variable to the tree.
           #
           # @param name [String] Name of the variable.
-          # @param value [Highway::Compiler::Analyze::Tree::Value] Value of the variable.
+          # @param value [Highway::Compiler::Analyze::Tree::Values::*] Value of the variable.
           # @param preset [String] Parent preset of the variable.
           #
           # @return [Void]
@@ -64,7 +66,7 @@ module Highway
           # @param index [Integer] Index of step in its scope.
           # @param name [String] Name of the step.
           # @param step_class [Class] Definition class of the step.
-          # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step.
+          # @param parameters [Highway::Compiler::Analyze::Tree::Values::Hash] The hash value of step parameters.
           # @param preset [String] Parent preset of the step.
           # @param stage [String] Parent stage of the step.
           #

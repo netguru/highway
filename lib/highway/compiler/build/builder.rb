@@ -94,25 +94,25 @@ module Highway
         def build_invocations(stages:, variables:, steps:, manifest:)
           steps.each_with_index do |step, index|
             stage = stages.find { |stage| stage.name == step.stage }
-            parameters = step.parameters.map { |parameter| Analyze::Tree::Parameter.new(name: parameter.name, value: build_value(value: parameter.value, variables: variables)) }
+            parameters = build_value(value: step.parameters, variables: variables)
             manifest.add_invocation(index: index + 1, step_class: step.step_class, parameters: parameters, policy: stage.policy)
           end
         end
 
         def build_value(value:, variables:)
-          if value.is_a?(Analyze::Tree::PrimitiveValue)
-            Analyze::Tree::PrimitiveValue.new(
-              segments: build_value_segments(segments: value.segments, variables: variables)
+          if value.is_a?(Analyze::Tree::Values::Primitive)
+            Analyze::Tree::Values::Primitive.new(
+              build_value_segments(segments: value.segments, variables: variables)
             )
-          elsif value.is_a?(Analyze::Tree::ArrayValue)
-            Analyze::Tree::ArrayValue.new(
-              children: value.children.map { |value|
+          elsif value.is_a?(Analyze::Tree::Values::Array)
+            Analyze::Tree::Values::Array.new(
+              value.children.map { |value|
                 build_value(value: value, variables: variables)
               }
             )
-          elsif value.is_a?(Analyze::Tree::DictionaryValue)
-            Analyze::Tree::DictionaryValue.new(
-              children: Utilities::hash_map(value.children) { |key, value|
+          elsif value.is_a?(Analyze::Tree::Values::Hash)
+            Analyze::Tree::Values::Hash.new(
+              Utilities::hash_map(value.children) { |key, value|
                 [key, build_value(value: value, variables: variables)]
               }
             )
@@ -122,8 +122,8 @@ module Highway
         def build_value_segments(segments:, variables:)
 
           resolved = segments.flat_map { |segment|
-            if segment.is_a?(Analyze::Tree::VariableValueSegment)
-              variable = variables.find { |variable| variable.name == segment.variable_name }
+            if segment.is_a?(Analyze::Tree::Segments::Variable) && segment.scope == :static
+              variable = variables.find { |variable| variable.name == segment.name }
               build_value_segments(segments: variable.value.segments, variables: variables)
             else
               [segment]
@@ -132,8 +132,8 @@ module Highway
 
           reduced = resolved.reduce([]) { |memo, segment|
             if last = memo.pop()
-              if last.is_a?(Analyze::Tree::TextValueSegment) && segment.is_a?(Analyze::Tree::TextValueSegment)
-                memo + [Analyze::Tree::TextValueSegment.new(value: last.value + segment.value)]
+              if last.is_a?(Analyze::Tree::Segments::Text) && segment.is_a?(Analyze::Tree::Segments::Text)
+                memo + [Analyze::Tree::Segments::Text.new(value: last.value + segment.value)]
               else
                 memo + [last, segment]
               end

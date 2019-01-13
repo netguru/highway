@@ -19,7 +19,7 @@ module Highway
           #
           # @param index [Integer] Index of invocation, 1-based.
           # @param step_class [Class] Definition class of the step.
-          # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step invocation.
+          # @param parameters [Highway::Compiler::Analyze::Tree::Values::Hash] Hash value of step parameters.
           # @param policy [Symbol] Execution policy of the step invocation.
           def initialize(index:, step_class:, parameters:, policy:)
             @index = index
@@ -38,8 +38,9 @@ module Highway
           # @return [Class]
           attr_reader :step_class
 
-          # Parameters of the step invocation.
-          # @return [Array<Highway::Compiler::Analyze::Tree::Parameter>]
+          # Hash value of step parameters.
+          #
+          # @return [Highway::Compiler::Analyze::Tree::Values::Hash]
           attr_reader :parameters
 
           # Execution policy of the step invocation.

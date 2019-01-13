@@ -35,7 +35,7 @@ module Highway
           #
           # @param index [Integer] Index of invocation, 1-based.
           # @param step_class [Class] Definition class of the step.
-          # @param parameters [Array<Highway::Compiler::Analyze::Tree::Parameter>] Parameters of the step invocation.
+          # @param parameters [Highway::Compiler::Analyze::Tree::Values::Hash] Hash value of step parameters.
           # @param policy [:normal, :always] Execution policy of the step invocation.
           #
           # @return [Void]
