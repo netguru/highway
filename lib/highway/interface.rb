@@ -15,10 +15,27 @@ module Highway
     public
 
     # Initialize an instance.
+    def initialize()
+      @history = []
+    end
+
+    # Display a raw unformatted message.
     #
-    # @param transform [Proc] A transforming block.
-    def initialize(transform: nil)
-      @transform = transform || :itself.to_proc
+    # @param message [String] The raw message.
+    #
+    # @return [Void]
+    def raw(message)
+      puts(message.to_s)
+      @history << message.to_s
+    end
+
+    # Display a whitespace, unless it's already displayed.
+    #
+    # @return [Void]
+    def whitespace()
+      unless (@history.last || "").end_with?("\n")
+        raw("\n")
+      end
     end
 
     # Display a success message.
@@ -27,7 +44,8 @@ module Highway
     #
     # @return [Void]
     def success(message)
-      FastlaneCore::UI.success(message)
+      FastlaneCore::UI.success(message.to_s)
+      @history << message.to_s
     end
 
     # Display an error message and abort.
@@ -36,7 +54,7 @@ module Highway
     #
     # @return [Void]
     def fatal!(message)
-      FastlaneCore::UI.user_error!(message)
+      FastlaneCore::UI.user_error!(message.to_s)
     end
 
     # Display an error message.
@@ -45,7 +63,8 @@ module Highway
     #
     # @return [Void]
     def error(message)
-      FastlaneCore::UI.error(message)
+      FastlaneCore::UI.error(message.to_s)
+      @history << message.to_s
     end
 
     # Display a warning message.
@@ -54,7 +73,8 @@ module Highway
     #
     # @return [Void]
     def warning(message)
-      FastlaneCore::UI.important(message)
+      FastlaneCore::UI.important(message.to_s)
+      @history << message.to_s
     end
 
     # Display a note message.
@@ -63,7 +83,8 @@ module Highway
     #
     # @return [Void]
     def note(message)
-      FastlaneCore::UI.message(message)
+      FastlaneCore::UI.message(message.to_s)
+      @history << message.to_s
     end
 
     # Display a success header message.
@@ -72,7 +93,7 @@ module Highway
     #
     # @return [Void]
     def header_success(message)
-      puts("\n")
+      whitespace()
       success("--- #{message}".bold)
     end
 
@@ -82,11 +103,11 @@ module Highway
     #
     # @return [Void]
     def header_warning(message)
-      puts("\n")
+      whitespace()
       warning("--- #{message}".bold)
     end
 
-    # Display a table.
+    # Display a table padded with whitespace.
     #
     # @param title [String] Table title.
     # @param headings [Array<String>] Heading titles.
@@ -95,23 +116,18 @@ module Highway
     # @return [Void]
     def table(title: nil, headings: [], rows:)
 
+      whitespace()
+
       table = Terminal::Table.new(
         title: title,
         headings: headings,
         rows: FastlaneCore::PrintTable.transform_output(rows)
       )
 
-      puts(table)
+      raw(table)
 
-    end
+      whitespace()
 
-    # Map the interface by transforming messages with a block.
-    #
-    # @param other [Proc] A transforming block.
-    #
-    # @return [Highway::Interface]
-    def map(&other)
-      self.class.new(transform: lambda { |message| other.call(@transform.call(message)) })
     end
 
   end
