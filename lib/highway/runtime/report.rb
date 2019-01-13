@@ -14,10 +14,10 @@ module Highway
       # Initialize an instance.
       #
       # @param invocation [Highway::Compiler::Build::Output::Invocation] The invocation.
-      # @param context [Highway::Runtime::Context] The runtime context.
-      def initialize(invocation:, context:)
+      # @param artifacts_dir [Path] Dir in which to prepare artifacts.
+      def initialize(invocation:, artifacts_dir:)
         @invocation = invocation
-        @context = context
+        @artifacts_dir = artifacts_dir
         @data = Hash.new()
       end
 
@@ -71,7 +71,7 @@ module Highway
       #
       # @return [String]
       def prepare_artifact(name)
-        File.join(@context.artifacts_dir, "#{invocation.identifier}-#{name}")
+        File.join(@artifacts_dir, "#{invocation.identifier}-#{name}")
       end
 
     end
