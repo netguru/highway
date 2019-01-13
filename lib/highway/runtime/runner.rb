@@ -7,9 +7,10 @@ require "fastlane"
 require "fileutils"
 
 require "highway/compiler/analyze/tree/root"
+require "highway/environment"
 require "highway/runtime/context"
-require "highway/runtime/environment"
 require "highway/runtime/report"
+require "highway/steps/infrastructure"
 require "highway/utilities"
 
 module Highway
@@ -45,11 +46,7 @@ module Highway
         # to evaluate non-environment variables, typecheck and validate the
         # parameters.
 
-        validate_invocations()
-
-        # Print the header, similar to Fastlane's "driving the lane".
-
-        @interface.success("Running Highway preset '#{@manifest.preset}' 🏎")
+        prevalidate_invocations()
 
         # Prepare the artifacts directory. If it doesn't exist, it's created at
         # this point. If it exist, it's removed and re-created.
@@ -65,29 +62,30 @@ module Highway
 
         report_metrics()
 
-        # Print a summary depending on the invocation reports.
+        # Now it's time to raise an error if any of the steps failed.
 
-        if !@context.reports_any_failed?
-          @interface.success("Wubba lubba dub dub, Highway preset '#{@manifest.preset}' has succeeded!")
-        else
-          clear_and_report_fastlane_lane_context()
-          @interface.fatal!("Highway preset '#{@manifest.preset}' has failed with one or more errors. Please examine the above log.")
+        if @context.reports_any_failed?
+          @interface.fatal!(nil)
         end
 
       end
 
       private
 
-      def validate_invocations()
-        @manifest.invocations.each do |invocation|
-          invocation.parameters.each do |parameter|
-            unless parameter.value.contains_env_variable_segments?
-              definition = invocation.step_class.parameters.find { |definition| definition.name == parameter.name }
-              value = evaluate_parameter(value: parameter.value)
-              typecheck_and_validate_parameter(definition: definition, value: value, invocation: invocation)
-            end
-          end
-        end
+      def prevalidate_invocations()
+
+        @interface.header_success("Validating step parameters...")
+
+        @manifest.invocations.each { |invocation|
+          invocation.step_class.root_parameter.typecheck_and_prevalidate(
+            evaluate_parameter_for_prevalidation(invocation.parameters),
+            interface: @interface,
+            keypath: invocation.keypath,
+          )
+        }
+
+        @interface.success("All step parameters passed initial validation.")
+
       end
 
       def prepare_artifacts_dir()
@@ -104,7 +102,10 @@ module Highway
 
       def run_invocation(invocation:)
 
-        report = Report.new(invocation: invocation, context: @context)
+        report = Report.new(
+          invocation: invocation,
+          artifacts_dir: @context.artifacts_dir,
+        )
 
         step_name = invocation.step_class.name
         time_started = Time.now
@@ -115,20 +116,15 @@ module Highway
 
           begin
 
-            default_parameters = Utilities::hash_map(invocation.step_class.parameters) { |parameter|
-              [parameter.name, parameter.default_value]
+            evaluated_parameters = Utilities::hash_map(invocation.parameters.children) { |name, value|
+              [name, evaluate_parameter(value)]
             }
 
-            evaluated_parameters = Utilities::hash_map(invocation.parameters) { |parameter|
-              [parameter.name, evaluate_parameter(value: parameter.value)]
-            }
-
-            coerced_parameters = Utilities::hash_map(evaluated_parameters) { |name, value|
-              definition = invocation.step_class.parameters.find { |definition| definition.name == name }
-              [name, typecheck_and_validate_parameter(definition: definition, value: value, invocation: invocation)]
-            }
-
-            parameters = default_parameters.merge(coerced_parameters)
+            parameters = invocation.step_class.root_parameter.typecheck_and_validate(
+              evaluated_parameters,
+              interface: @interface,
+              keypath: invocation.keypath,
+            )
 
             invocation.step_class.run(
               parameters: parameters,
@@ -162,35 +158,41 @@ module Highway
 
       end
 
-      def evaluate_parameter(value:)
-        if value.is_a?(Compiler::Analyze::Tree::PrimitiveValue)
+      def evaluate_parameter(value)
+        if value.is_a?(Compiler::Analyze::Tree::Values::Primitive)
           value.segments.reduce("") { |memo, segment|
-            if segment.is_a?(Compiler::Analyze::Tree::TextValueSegment)
+            if segment.is_a?(Compiler::Analyze::Tree::Segments::Text)
               memo + segment.value
-            elsif segment.is_a?(Compiler::Analyze::Tree::EnvVariableValueSegment)
-              memo + ENV.fetch(segment.variable_name, "")
+            elsif segment.is_a?(Compiler::Analyze::Tree::Segments::Variable) && segment.scope == :env
+              memo + @context.env.find(segment.name) || ""
             end
           }
-        elsif value.is_a?(Compiler::Analyze::Tree::ArrayValue)
+        elsif value.is_a?(Compiler::Analyze::Tree::Values::Array)
           value.children.map { |value|
-            evaluate_parameter(value: value)
+            evaluate_parameter(value)
           }
-        elsif value.is_a?(Compiler::Analyze::Tree::DictionaryValue)
+        elsif value.is_a?(Compiler::Analyze::Tree::Values::Hash)
           Utilities::hash_map(value.children) { |key, value|
-            [key, evaluate_parameter(value: value)]
+            [key, evaluate_parameter(value)]
           }
         end
       end
 
-      def typecheck_and_validate_parameter(definition:, value:, invocation:)
-        if value != nil
-          if (typechecked = definition.type.typecheck_and_validate(value)) && definition.validate(typechecked)
-            typechecked
+      def evaluate_parameter_for_prevalidation(value)
+        if value.is_a?(Compiler::Analyze::Tree::Values::Primitive)
+          if value.select_variable_segments_with_scope(:env).empty?
+            evaluate_parameter(value)
           else
-            @interface.fatal!("Invalid value: '#{value}' for parameter: '#{definition.name}' of step: '#{invocation.step_class.name}'.")
+            :ignore
           end
-        else
-          definition.default_value
+        elsif value.is_a?(Compiler::Analyze::Tree::Values::Array)
+          value.children.map { |value|
+            evaluate_parameter_for_prevalidation(value)
+          }
+        elsif value.is_a?(Compiler::Analyze::Tree::Values::Hash)
+          Utilities::hash_map(value.children) { |key, value|
+            [key, evaluate_parameter_for_prevalidation(value)]
+          }
         end
       end
 
@@ -224,32 +226,11 @@ module Highway
 
         }
 
-        puts("\n")
-
         @interface.table(
           title: "Highway Summary".yellow,
           headings: ["", "Step", "Duration"],
           rows: rows
         )
-
-        puts("\n")
-
-      end
-
-      def clear_and_report_fastlane_lane_context()
-
-        lane_context_rows = @context.fastlane_lane_context.collect do |key, content|
-          [key, content.to_s]
-        end
-
-        @interface.table(
-          title: "Lane Context".yellow,
-          rows: lane_context_rows
-        )
-
-        puts("\n")
-
-        @context.fastlane_lane_context.clear()
 
       end
 
