@@ -3,10 +3,17 @@
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
+# Fastlane will make sure that the `highway` gem is loaded and will display
+# useful information if it's not.
+
 fastlane_require "highway"
 
 desc "Run Highway."
 lane :highway do |options|
+
+  # Use the same behavior of computing option values as in action entry point.
+  # First, get the actual values, then fall back to env variables, then fall
+  # back to default values.
 
   path = options[:highwayfile]
   path ||= ENV["HIGHWAY_HIGHWAYFILE"]
@@ -14,13 +21,16 @@ lane :highway do |options|
 
   preset = options[:preset]
   preset ||= ENV["HIGHWAY_PRESET"]
+  preset ||= "default"
+
+  # Run Highway from `:lane` entry point.
 
   main = Highway::Main.new(
-    option_path: path,
-    option_preset: preset,
+    entrypoint: :lane,
+    path: path,
+    preset: preset,
     fastlane_runner: runner,
     fastlane_lane_context: lane_context,
-    mode: :lane,
   )
 
   main.run()

@@ -14,22 +14,28 @@ module Fastlane
 
       # Available options of `run_highway` action.
       #
+      # Use the same behavior of computing option values as in lane entry point.
+      # First, get the actual values, then fall back to env variables, then fall
+      # back to default values.
+      #
       # @return [Array<FastlaneCore::ConfigItem>]
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(
             key: :highwayfile,
-            env_name: "HIGHWAY_HIGHWAYFILE",
             description: "Path to Highway configuration file",
+            type: String,
             optional: false,
-            type: String
+            env_name: "HIGHWAY_HIGHWAYFILE",
+            default_value: "Highwayfile.yml",
           ),
           FastlaneCore::ConfigItem.new(
             key: :preset,
-            env_name: "HIGHWAY_PRESET",
             description: "Highway preset to run",
-            optional: false,
             type: String,
+            optional: false,
+            env_name: "HIGHWAY_PRESET",
+            default_value: "default",
           ),
         ]
       end
@@ -41,12 +47,14 @@ module Fastlane
       # @param options [Hash<String, Object>]
       def self.run(options)
 
+        # Run Highway from `:action` entry point.
+
         main = Highway::Main.new(
-          fastlane_options: options,
+          entrypoint: :action,
+          path: options[:highwayfile],
+          preset: options[:preset],
           fastlane_runner: runner,
           fastlane_lane_context: lane_context,
-          fastlane_ui: UI,
-          mode: :action,
         )
 
         main.run()
