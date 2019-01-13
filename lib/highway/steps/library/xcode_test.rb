@@ -29,6 +29,11 @@ module Highway
               required: false,
             ),
             Parameters::Single.new(
+              name: "device",
+              type: Types::String.new(),
+              required: false,
+            ),
+            Parameters::Single.new(
               name: "flags",
               type: Types::Array.new(Types::String.new()),
               required: false,
@@ -63,6 +68,7 @@ module Highway
 
           clean = parameters["clean"]
           configuration = parameters["configuration"]
+          device = parameters["device"]
           scheme = parameters["scheme"]
 
           flags = parameters["flags"].join(" ")
@@ -110,7 +116,9 @@ module Highway
 
               clean: clean,
               configuration: configuration,
+              device: device,
               scheme: scheme,
+
               xcargs: xcargs,
 
               buildlog_path: output_raw_temp_dir,
