@@ -1,5 +1,5 @@
 #
-# dictionary.rb
+# hash.rb
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
@@ -11,7 +11,7 @@ module Highway
     module Types
 
       # This class represents a dictionary parameter type.
-      class Dictionary < Types::Any
+      class Hash < Types::Any
 
         public
 

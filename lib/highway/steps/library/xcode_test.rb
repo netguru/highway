@@ -49,8 +49,8 @@ module Highway
             ),
             Parameter.new(
               name: "settings",
+              type: Types::Hash.new(Types::String.new(), validate: lambda { |dict| dict.keys.all? { |key| /[A-Z_][A-Z0-9_]*/ =~ key } }),
               required: false,
-              type: Types::Dictionary.new(Types::String.new(), validate: lambda { |dict| dict.keys.all? { |key| /[A-Z_][A-Z0-9_]*/ =~ key } }),
               default_value: {},
             ),
           ]

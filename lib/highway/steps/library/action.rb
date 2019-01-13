@@ -25,8 +25,8 @@ module Highway
             Parameter.new(
               name: "options",
               required: false,
-              type: Types::Dictionary.new(Types::Any.new()),
               default_value: {},
+              type: Types::Hash.new(Types::Any.new()),
             ),
           ]
         end
