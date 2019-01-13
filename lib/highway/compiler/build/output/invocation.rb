@@ -21,11 +21,13 @@ module Highway
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Highway::Compiler::Analyze::Tree::Values::Hash] Hash value of step parameters.
           # @param policy [Symbol] Execution policy of the step invocation.
-          def initialize(index:, step_class:, parameters:, policy:)
+          # @param keypath [Array<String>] A keypath used for debugging purposes.
+          def initialize(index:, step_class:, parameters:, policy:, keypath:)
             @index = index
             @step_class = step_class
             @parameters = parameters
             @policy = policy
+            @keypath = keypath
           end
 
           # Index of invocation, 1-based.
@@ -47,6 +49,11 @@ module Highway
           #
           # @return [Symbol]
           attr_reader :policy
+
+          # A keypath used for debugging purposes.
+          #
+          # @return [Array<String>]
+          attr_reader :keypath
 
           # An identifier of the invocation, joined by index and step name.
           #

@@ -95,7 +95,8 @@ module Highway
           steps.each_with_index do |step, index|
             stage = stages.find { |stage| stage.name == step.stage }
             parameters = build_value(value: step.parameters, variables: variables)
-            manifest.add_invocation(index: index + 1, step_class: step.step_class, parameters: parameters, policy: stage.policy)
+            keypath = [step.stage, step.preset, step.name]
+            manifest.add_invocation(index: index + 1, step_class: step.step_class, parameters: parameters, policy: stage.policy, keypath: keypath)
           end
         end
 

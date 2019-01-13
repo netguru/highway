@@ -37,10 +37,11 @@ module Highway
           # @param step_class [Class] Definition class of the step.
           # @param parameters [Highway::Compiler::Analyze::Tree::Values::Hash] Hash value of step parameters.
           # @param policy [:normal, :always] Execution policy of the step invocation.
+          # @param keypath [Array<String>] A keypath used for debugging purposes.
           #
           # @return [Void]
-          def add_invocation(index:, step_class:, parameters:, policy:)
-            @invocations << Invocation.new(index: index, step_class: step_class, parameters: parameters, policy: policy)
+          def add_invocation(index:, step_class:, parameters:, policy:, keypath:)
+            @invocations << Invocation.new(index: index, step_class: step_class, parameters: parameters, policy: policy, keypath: keypath)
           end
 
         end
