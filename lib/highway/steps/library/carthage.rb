@@ -17,21 +17,21 @@ module Highway
 
         def self.parameters
           [
-            Parameter.new(
+            Parameters::Single.new(
               name: "command",
               required: false,
               type: Types::Enum.new("bootstrap", "update"),
-              default_value: "bootstrap"
+              default: "bootstrap",
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "github_token",
               required: false,
               type: Types::String.new(),
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "platforms",
               required: true,
-              type: Types::Set.new(Types::Enum.new("iOS", "macOS", "tvOS", "watchOS")),
+              type: Types::Set.new(Types::Enum.new("macOS", "iOS", "tvOS", "watchOS")),
             ),
           ]
         end

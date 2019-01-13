@@ -5,7 +5,8 @@
 
 require "fastlane"
 
-require "highway/steps/parameter"
+require "highway/steps/parameters/compound"
+require "highway/steps/parameters/single"
 require "highway/steps/step"
 require "highway/steps/types/any"
 require "highway/steps/types/anyof"

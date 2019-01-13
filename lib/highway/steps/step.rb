@@ -3,6 +3,8 @@
 # Copyright © 2018 Netguru S.A. All rights reserved.
 #
 
+require "highway/steps/parameters/compound"
+
 module Highway
   module Steps
 
@@ -21,9 +23,16 @@ module Highway
 
       # Parameters that this step recognizes.
       #
-      # @return [Array<Highway::Steps::Parameter>]
+      # @return [Array<Highway::Steps::Parameters::*>]
       def self.parameters
         raise NotImplementedError.new("You must override `#{__method__.to_s}` in `#{self.class.to_s}`.")
+      end
+
+      # The root parameter that nests all parameters of the step.
+      #
+      # @return [Highway::Steps::Parameters::Compound]
+      def self.root_parameter
+        return Parameters::Compound.new(name: "root", required: true, defaults: true, children: parameters)
       end
 
       # Run the step in given context containing inputs and Fastlane runner.

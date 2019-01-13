@@ -20,7 +20,7 @@ module Highway
 
         def self.parameters
           [
-            Parameter.new(
+            Parameters::Single.new(
               name: "avatar",
               required: false,
               type: Types::AnyOf.new(
@@ -28,18 +28,18 @@ module Highway
                 emoji: Types::String.regex(/\:[a-z0-9_-]+\:/),
               ),
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "channel",
               required: true,
               type: Types::String.regex(/#[a-z0-9_-]+/)
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "username",
               required: false,
               type: Types::String.new(),
-              default_value: "Highway",
+              default: "Highway",
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "webhook",
               required: true,
               type: Types::Url.new(),
@@ -73,12 +73,16 @@ module Highway
 
           notifier = Slack::Notifier.new(webhook)
 
-          notifier.post({
-            username: username,
-            icon_emoji: avatar_emoji,
-            icon_url: avatar_url,
-            attachments: attachments,
-          })
+          # notifier.post({
+          #   username: username,
+          #   icon_emoji: avatar_emoji,
+          #   icon_url: avatar_url,
+          #   attachments: attachments,
+          # })
+
+          puts attachments.inspect
+
+          context.interface.success("Successfully posted a report message on Slack.")
 
         end
 
@@ -272,7 +276,11 @@ module Highway
             count: {all: 0, failed: 0, succeeded: 0}
           }
 
-          context.test_reports.reduce(zero_report) { |memo, report|
+          merged_results = context.test_reports.map { |report|
+            report[:result]
+          }
+
+          merged_report = context.test_reports.reduce(zero_report) { |memo, report|
             {
               errors: memo[:errors] + report[:test][:errors],
               failures: memo[:failures] + report[:test][:failures],
@@ -283,6 +291,20 @@ module Highway
               }
             }
           }
+
+          merged_report[:result] = merged_results.each_cons(2) { |lhs, rhs|
+            if lhs == :error || rhs == :error
+              :error
+            elsif lhs == :failure || rhs == :failure
+              :failure
+            elsif lhs == :succeess && rhs == :success
+              :success
+            else
+              :failure
+            end
+          }
+
+          merged_report
 
         end
 

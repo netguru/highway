@@ -17,16 +17,16 @@ module Highway
 
         def self.parameters
           [
-            Parameter.new(
+            Parameters::Single.new(
               name: "name",
               required: true,
               type: Types::String.new(),
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "options",
               required: false,
-              default_value: {},
               type: Types::Hash.new(Types::Any.new()),
+              default: {},
             ),
           ]
         end

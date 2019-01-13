@@ -17,7 +17,7 @@ module Highway
 
         def self.parameters
           [
-            Parameter.new(
+            Parameters::Single.new(
               name: "command",
               required: true,
               type: Types::String.new(),

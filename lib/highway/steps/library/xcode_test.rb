@@ -17,41 +17,41 @@ module Highway
 
         def self.parameters
           [
-            Parameter.new(
+            Parameters::Single.new(
               name: "clean",
-              required: false,
               type: Types::Bool.new(),
-              default_value: false,
+              required: false,
+              default: true,
             ),
-            Parameter.new(
+            Parameters::Single.new(
               name: "configuration",
-              required: false,
               type: Types::String.new(),
-            ),
-            Parameter.new(
-              name: "flags",
               required: false,
-              type: Types::Array.new(Types::String.new()),
-              default_value: [],
             ),
-            Parameter.new(
+            Parameters::Single.new(
+              name: "flags",
+              type: Types::Array.new(Types::String.new()),
+              required: false,
+              default: [],
+            ),
+            Parameters::Single.new(
               name: "project",
-              required: true,
               type: Types::AnyOf.new(
                 project: Types::String.regex(/.+\.xcodeproj/),
                 workspace: Types::String.regex(/.+\.xcworkspace/),
               ),
-            ),
-            Parameter.new(
-              name: "scheme",
               required: true,
-              type: Types::String.new(),
             ),
-            Parameter.new(
+            Parameters::Single.new(
+              name: "scheme",
+              type: Types::String.new(),
+              required: true,
+            ),
+            Parameters::Single.new(
               name: "settings",
               type: Types::Hash.new(Types::String.new(), validate: lambda { |dict| dict.keys.all? { |key| /[A-Z_][A-Z0-9_]*/ =~ key } }),
               required: false,
-              default_value: {},
+              default: {},
             ),
           ]
         end
