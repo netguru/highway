@@ -33,17 +33,18 @@ module Highway
       # @return [Highway::Compiler::Build::Output::Manifest]
       def compile(path:, preset:)
 
-        parser_interface = @interface.map { |message| "Failed to parse the configuration file. #{message}" }
-        parser = Parse::Parser.new(interface: parser_interface)
+        @interface.header_success("Compiling the configuration file...")
+
+        parser = Parse::Parser.new(interface: @interface)
         parse_tree = parser.parse(path: path)
 
-        analyzer_interface = @interface.map { |message| "Failed to validate the configuration file. #{message}" }
-        analyzer = Analyze::Analyzer.new(registry: @registry, interface: analyzer_interface)
+        analyzer = Analyze::Analyzer.new(registry: @registry, interface: @interface)
         sema_tree = analyzer.analyze(parse_tree: parse_tree)
 
-        builder_interface = @interface.map { |message| "Failed to compile the configuration file. #{message}" }
-        builder = Build::Builder.new(interface: builder_interface)
+        builder = Build::Builder.new(interface: @interface)
         manifest = builder.build(sema_tree: sema_tree, preset: preset)
+
+        @interface.success("Successfully compiled the configuration file.")
 
         manifest
 
