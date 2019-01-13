@@ -42,10 +42,14 @@ module Highway
 
           # Load the file.
 
+          unless File.exist?(path)
+            @interface.fatal!("The configuration file '#{path}' does not exist.")
+          end
+
           begin
             raw = YAML.load_file(path)
           rescue StandardError => error
-            @interface.fatal!("The configuration file is not a valid YAML file.")
+            @interface.fatal!("The configuration file '#{path}' is not a valid YAML file.")
           end
 
           # Make sure it contains a hash.
