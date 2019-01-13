@@ -19,9 +19,8 @@ module Highway
         # Initialize an instance.
         #
         # @param *values [String] Allowed enum values.
-        # @param validate [Proc] A custom value validation block.
-        def initialize(*values, validate: nil)
-          super(validate: validate)
+        def initialize(*values)
+          super(validate: nil)
           @values = values
         end
 
