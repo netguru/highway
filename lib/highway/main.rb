@@ -28,7 +28,7 @@ module Highway
     # @param fastlane_lane_context [Hash] The fastlane lane context.
     def initialize(entrypoint:, path:, preset:, fastlane_runner:, fastlane_lane_context:)
       @entrypoint = entrypoint
-      @path = File.expand_path(path)
+      @path = path
       @preset = preset
       @fastlane_runner = fastlane_runner
       @fastlane_lane_context = fastlane_lane_context
@@ -65,7 +65,7 @@ module Highway
         )
 
         manifest = compiler.compile(
-          path: @path,
+          path: File.expand_path(@path, running_dir),
           preset: @preset,
         )
 
