@@ -116,6 +116,20 @@ module Highway
         @reports.select { |report| report[:test] != nil }
       end
 
+      # Reports containing information about archives.
+      #
+      # @return [Array<Highway::Runtime::Report>]
+      def archive_reports
+        @reports.select { |report| report[:archive] != nil }
+      end
+
+      # Reports containing information about deployments.
+      #
+      # @return [Array<Highway::Runtime::Report>]
+      def deployment_reports
+        @reports.select { |report| report[:deployment] != nil }
+      end
+
       # @!group Assertions
 
       # Assert that a gem with specified name is available.

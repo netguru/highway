@@ -55,11 +55,12 @@ module Highway
           avatar_url = parameters["avatar"][:value].to_s if parameters["avatar"][:tag] == :url
 
           attachments = [
-            generate_build_attachment(context),
-            generate_tests_attachment(context),
+            generate_build_attachments(context),
+            generate_tests_attachments(context),
+            generate_deployment_attachments(context),
           ]
 
-          attachments = attachments.compact
+          attachments = attachments.flatten.compact
 
           attachments.each { |attachment|
             attachment[:mrkdwn_in] = [:text, :fields]
@@ -73,14 +74,12 @@ module Highway
 
           notifier = Slack::Notifier.new(webhook)
 
-          # notifier.post({
-          #   username: username,
-          #   icon_emoji: avatar_emoji,
-          #   icon_url: avatar_url,
-          #   attachments: attachments,
-          # })
-
-          puts attachments.inspect
+          notifier.post({
+            username: username,
+            icon_emoji: avatar_emoji,
+            icon_url: avatar_url,
+            attachments: attachments,
+          })
 
           context.interface.success("Successfully posted a report message on Slack.")
 
@@ -88,7 +87,7 @@ module Highway
 
         private
 
-        def self.generate_build_attachment(context)
+        def self.generate_build_attachments(context)
 
           # Generate main field containing information about build status
           # and its identifier.
@@ -173,7 +172,7 @@ module Highway
 
         end
 
-        def self.generate_tests_attachment(context)
+        def self.generate_tests_attachments(context)
 
           # Skip if there are no test reports.
 
@@ -305,6 +304,73 @@ module Highway
           }
 
           merged_report
+
+        end
+
+        def self.generate_deployment_attachments(context)
+
+          # Skip if there are no  deployment reports.
+
+          reports = context.deployment_reports
+          return nil if reports.empty?
+
+          # Map reports into attachments.
+
+          attachments = reports.map { |report|
+            prepare_deployment_attachment(report[:deployment])
+          }
+
+          attachments
+
+        end
+
+        def self.prepare_deployment_attachment(report)
+
+          # Generate main field containing the information about deployment
+          # result and information.
+
+          main_title = "Deployment succeeded"
+
+          package_comps = []
+          package_comps << report[:package][:name]
+          package_comps << report[:package][:version]
+          package_comps << "(#{report[:package][:build]})" if report[:package][:build] != nil
+
+          package_value = package_comps.compact.join(" ").strip
+          package_value = "(unknown package)" if package_value.empty?
+
+          main_value = "Successfully deployed #{package_value} to #{report[:service]}."
+
+          # Generate install button pointing to the installation page.
+
+          install_title = "Install"
+          install_url = report[:urls][:install]
+
+          # Generate manage button pointing to the view page.
+
+          view_title = "View"
+          view_url = report[:urls][:view]
+
+          # Generate the attachment fallback value and color.
+
+          attachment_fallback = "Deployment succeeded. #{main_value}"
+          attachment_color = "good"
+
+          # Assemble the attachment.
+
+          attachment_fields = []
+          attachment_fields << {title: main_title, value: main_value, short: false} if main_value != nil
+
+          attachment_actions = []
+          attachment_actions << {type: "button", style: "primary", text: install_title, url: install_url} if install_url != nil
+          attachment_actions << {type: "button", style: "default", text: view_title, url: view_url} if view_url != nil
+
+          {
+            color: attachment_color,
+            fields: attachment_fields,
+            actions: attachment_actions,
+            fallback: attachment_fallback,
+          }
 
         end
 
