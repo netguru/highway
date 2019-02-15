@@ -176,9 +176,9 @@ module Highway
     # @return [String, nil]
     def git_commit_message
       case ci_service
-        when :bitrise then find_nonempty("GIT_CLONE_COMMIT_MESSAGE_SUBJECT")
-        when :travis then find_nonempty("TRAVIS_COMMIT_MESSAGE")
-        else safe_sh("git", "log -1 --pretty=%B")
+        when :bitrise then find_nonempty("GIT_CLONE_COMMIT_MESSAGE_SUBJECT").split("\n").first
+        when :travis then find_nonempty("TRAVIS_COMMIT_MESSAGE").split("\n").first
+        else safe_sh("git", "log -1 --pretty=%B").split("\n").first
       end
     end
 
