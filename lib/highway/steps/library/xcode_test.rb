@@ -103,7 +103,6 @@ module Highway
 
           report_test = {}
           report_artifacts = {}
-
           rescued_error = nil
 
           # Run the build and test.

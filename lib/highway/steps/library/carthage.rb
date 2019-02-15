@@ -31,7 +31,7 @@ module Highway
             Parameters::Single.new(
               name: "platforms",
               required: true,
-              type: Types::Set.new(Types::Enum.new("macOS", "iOS", "tvOS", "watchOS")),
+              type: Types::Set.new(Types::Enum.new("macos", "ios", "tvos", "watchos")),
             ),
           ]
         end
@@ -41,21 +41,21 @@ module Highway
           context.assert_executable_available!("carthage")
 
           command = parameters["command"]
-          platform = parameters["platforms"].to_a.join(",").gsub(%r(macOS), "Mac")
           token = parameters["github_token"]
+
+          platform_map = {macos: "Mac", ios: "iOS", tvos: "tvOS", watchos: "watchOS"}
+          platform = parameters["platforms"].to_a.map { |p| platform_map[p.to_sym] }.join(",")
 
           env = {
             "GITHUB_ACCESS_TOKEN" => token
           }
 
           context.with_modified_env(env) {
-
             context.run_action("carthage", options: {
               cache_builds: true,
               command: command,
               platform: platform,
             })
-
           }
 
         end

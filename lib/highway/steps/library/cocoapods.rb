@@ -53,7 +53,6 @@ module Highway
           elsif command == "update"
 
             invocation = []
-
             invocation << "bundle exec" if context.should_use_bundle_exec?
             invocation << "pod update"
             invocation << "--repo-update" if repo_update_always
