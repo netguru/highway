@@ -95,7 +95,7 @@ module Highway
 
       end
 
-    rescue FastlaneCore::Interface::FastlaneException => error
+    rescue StandardError => error
 
       # Unless the error contains any message we should print it right now but
       # as an error so that we can still control the output.
@@ -117,8 +117,8 @@ module Highway
 
       # Now we throw a fatal error that tells Fastlane to abort.
 
-      @interface.whitespace()
-      @interface.fatal!("Highway preset '#{@preset}' has failed with one or more errors. Please examine the above log.")
+      interface.whitespace()
+      interface.fatal!("Highway preset '#{@preset}' has failed with one or more errors. Please examine the above log.")
 
     end
 

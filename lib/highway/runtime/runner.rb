@@ -134,7 +134,7 @@ module Highway
 
             report.result = :success
 
-          rescue FastlaneCore::Interface::FastlaneException => error
+          rescue StandardError => error
 
             @interface.error(error.message)
 
