@@ -12,7 +12,7 @@ module Highway
       class XcodeTestStep < Step
 
         def self.name
-          "xcode-test"
+          "xcode_test"
         end
 
         def self.parameters

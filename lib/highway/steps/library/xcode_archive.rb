@@ -15,7 +15,7 @@ module Highway
       class XcodeArchiveStep < Step
 
         def self.name
-          "xcode-archive"
+          "xcode_archive"
         end
 
         def self.parameters
@@ -94,12 +94,6 @@ module Highway
           output_ipa_path = report.prepare_artifact("archive.ipa")
           output_ipa_dir = File.dirname(output_ipa_path)
           output_ipa_file = File.basename(output_ipa_path)
-
-          # Prepare temporary variables.
-
-          report_archive = {}
-          report_artifacts = {}
-          rescued_error = nil
 
           # Run the build and archival.
 
