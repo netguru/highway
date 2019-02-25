@@ -102,6 +102,9 @@ module Highway
 
       def run_invocation(invocation:)
 
+        # Prepare a report instance and some temporary variables to be used in
+        # metrics.
+
         report = Report.new(
           invocation: invocation,
           artifacts_dir: @context.artifacts_dir,
@@ -112,9 +115,15 @@ module Highway
 
         if !@context.reports_any_failed? || invocation.policy == :always
 
+          # Only run the step if no previous step has failed or if the step
+          # should always be executed.
+
           @interface.header_success("Running step: #{step_name}...")
 
           begin
+
+            # Evaluate, typecheck and map the invocation parameters. At this
+            # point we're able to evaluate environment variables.
 
             evaluated_parameters = Utilities::hash_map(invocation.parameters.children) { |name, value|
               [name, evaluate_parameter(value)]
@@ -126,6 +135,8 @@ module Highway
               keypath: invocation.keypath,
             )
 
+            # Run the step invocation. This is where steps are executed.
+
             invocation.step_class.run(
               parameters: parameters,
               context: @context,
@@ -134,9 +145,40 @@ module Highway
 
             report.result = :success
 
-          rescue StandardError => error
+          rescue FastlaneCore::Interface::FastlaneError, FastlaneCore::Interface::FastlaneCommonException => error
+
+            # These two errors should not count as crashes and should not print
+            # backtrace unless running in verbose mode. This follows the
+            # behavior of `Fastlane::Runner`.
 
             @interface.error(error.message)
+            @interface.error(error.backtrace.join("\n")) if @context.env.verbose?
+
+            report.result = :failure
+            report.error = error
+
+          rescue FastlaneCore::Interface::FastlaneShellError => error
+
+            # This error should be treated in a special way as its message
+            # contains the whole command output. It should only be printed in
+            # verbose mode.
+
+            @interface.error(error.message.split("\n").first)
+            @interface.error(error.message.split("\n").drop(1).join("\n")) if @context.env.verbose?
+            @interface.error(error.backtrace.join("\n")) if @context.env.verbose?
+
+            report.result = :failure
+            report.error = error
+
+          rescue => error
+
+            # Chances are that this is `FastlaneCore::Interface::FastlaneCrash`
+            # but it could be another error as well. For these error a backtrace
+            # should always be printed. This follows the behavior of
+            # `Fastlane::Runner`.
+
+            @interface.error("#{error.class}: #{error.message}")
+            @interface.error(error.backtrace.join("\n"))
 
             report.result = :failure
             report.error = error

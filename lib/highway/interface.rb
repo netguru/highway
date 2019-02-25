@@ -44,8 +44,8 @@ module Highway
     #
     # @return [Void]
     def success(message)
-      FastlaneCore::UI.success(message.to_s)
-      @history << message.to_s
+      message.to_s.strip.split("\n").each { |line| FastlaneCore::UI.success(line) }
+      @history << message.to_s.strip
     end
 
     # Display an error message and abort.
@@ -63,8 +63,8 @@ module Highway
     #
     # @return [Void]
     def error(message)
-      FastlaneCore::UI.error(message.to_s)
-      @history << message.to_s
+      message.to_s.strip.split("\n").each { |line| FastlaneCore::UI.error(line) }
+      @history << message.to_s.strip
     end
 
     # Display a warning message.
@@ -73,8 +73,8 @@ module Highway
     #
     # @return [Void]
     def warning(message)
-      FastlaneCore::UI.important(message.to_s)
-      @history << message.to_s
+      message.to_s.strip.split("\n").each { |line| FastlaneCore::UI.important(line) }
+      @history << message.to_s.strip
     end
 
     # Display a note message.
@@ -83,8 +83,8 @@ module Highway
     #
     # @return [Void]
     def note(message)
-      FastlaneCore::UI.message(message.to_s)
-      @history << message.to_s
+      message.to_s.strip.split("\n").each { |line| FastlaneCore::UI.message(line) }
+      @history << message.to_s.strip
     end
 
     # Display a success header message.
