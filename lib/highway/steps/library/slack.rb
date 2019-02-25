@@ -97,9 +97,9 @@ module Highway
           if context.env.ci?
             if context.env.ci_build_number != nil
               if context.env.ci_build_url != nil
-                main_value = "[##{context.env.ci_build_number}](#{context.env.ci_build_url})"
+                main_value = "[#{context.env.ci_build_number}](#{context.env.ci_build_url})"
               else
-                main_value = "##{context.env.ci_build_number}"
+                main_value = "#{context.env.ci_build_number}"
               end
             else
               main_value = "(unknown build)"

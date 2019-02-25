@@ -175,7 +175,7 @@ module Highway
       def run_action(name, options:)
 
         unless contains_action?(name)
-          @interface.fatal!("Can't execute action '#{name}' because it doesn't exist.'")
+          @interface.fatal!("Can't execute action '#{name}' because it doesn't exist.")
         end
 
         unless !contains_lane?(name)
