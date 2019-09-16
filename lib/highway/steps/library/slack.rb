@@ -51,8 +51,8 @@ module Highway
 
           username = parameters["username"]
           webhook = parameters["webhook"].to_s
-          avatar_emoji = parameters["avatar"][:value] if parameters["avatar"][:tag] == :emoji
-          avatar_url = parameters["avatar"][:value].to_s if parameters["avatar"][:tag] == :url
+          avatar_emoji = parameters["avatar"][:value] if parameters["avatar"]&[:tag] == :emoji
+          avatar_url = parameters["avatar"][:value].to_s if parameters["avatar"]&[:tag] == :url
 
           attachments = [
             generate_build_attachments(context),
