@@ -51,7 +51,8 @@ module Highway
         #
         # @return [Object]
         def typecheck_and_validate(value, interface:, keypath: [])
-          if (typechecked = @type.typecheck_and_validate(value))
+          typechecked = @type.typecheck_and_validate(value)
+          if typechecked != nil
             typechecked
           else
             interface.fatal!("Invalid value: '#{value}' for parameter: '#{Utilities::keypath_to_s(keypath)}'.")
