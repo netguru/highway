@@ -206,7 +206,11 @@ module Highway
             if segment.is_a?(Compiler::Analyze::Tree::Segments::Text)
               memo + segment.value
             elsif segment.is_a?(Compiler::Analyze::Tree::Segments::Variable) && segment.scope == :env
-              memo + @context.env.find(segment.name) || ""
+              if @context.env.include?(segment.name)
+                memo + @context.env.find(segment.name) || ""
+              else
+                @interface.fatal!("The value for key '#{segment.name}' does not exist.")
+              end
             end
           }
         elsif value.is_a?(Compiler::Analyze::Tree::Values::Array)
