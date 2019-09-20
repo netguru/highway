@@ -25,8 +25,18 @@ module Highway
                 type: Types::String.regex(/^\S+@\S+\.\S+$/)
               ),
               Parameters::Single.new(
+                name: "password",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "session",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
                 name: "app_specific_password",
-                required: true,
+                required: false,
                 type: Types::String.new()
               ),
               Parameters::Single.new(
@@ -51,14 +61,23 @@ module Highway
 
           def self.run(parameters:, context:, report:)
 
-            username = parameters["username"]
+            password = parameters["password"]
             app_specific_password = parameters["app_specific_password"]
+            session = parameters["session"]
+
+            if password.nil? && app_specific_password.nil?
+              context.interface.fatal!("You need to provide an account password or application specific password! Additionally if you have enabled two-step verification, you will need to provide generated session.")
+            end
+
+            username = parameters["username"]
             apple_id = parameters["apple_id"]
             skip_submission = parameters["skip_submission"]
             skip_waiting_for_build_processing = parameters["skip_waiting_for_build_processing"]
 
             env = {
-              "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD" => app_specific_password
+              "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD" => app_specific_password,
+              "FASTLANE_PASSWORD" => password,
+              "FASTLANE_SESSION" => session
             }
 
             context.with_modified_env(env) {
