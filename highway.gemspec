@@ -28,4 +28,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "uri-ssh_git", ">= 2.0.0", "<= 3.0.0"
   spec.add_dependency "xcpretty-json-formatter", ">= 0.1.1", "<= 1.0.0"
 
+  # Development Dependencies
+
+  spec.add_development_dependency "rake", "< 12"
+  spec.add_development_dependency "rspec", "~> 3.5.0"
+  spec.add_development_dependency "simplecov", "~> 0.17.0"
 end

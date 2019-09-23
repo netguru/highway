@@ -11,7 +11,7 @@ module Highway
 
     public
 
-    # Map pais of keys and values and combine them again into a Hash.
+    # Map pairs of keys and values and combine them again into a Hash.
     #
     # @param subject [Hash] An input hash.
     # @param transform [Proc] A transformation block.
