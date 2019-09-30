@@ -58,6 +58,11 @@ module Highway
               required: false,
               default: {},
             ),
+            Parameters::Single.new(
+              name: "code_coverage",
+              type: Types::Bool.new(),
+              required: false,
+            )
           ]
         end
 
@@ -70,6 +75,7 @@ module Highway
           configuration = parameters["configuration"]
           device = parameters["device"]
           scheme = parameters["scheme"]
+          code_coverage = parameters["code_coverage"]
 
           flags = parameters["flags"].join(" ")
           settings = parameters["settings"].map { |setting, value| "#{setting}=\"#{value.shellescape}\"" }.join(" ")
@@ -117,6 +123,7 @@ module Highway
               configuration: configuration,
               device: device,
               scheme: scheme,
+              code_coverage: code_coverage,
 
               xcargs: xcargs,
 
