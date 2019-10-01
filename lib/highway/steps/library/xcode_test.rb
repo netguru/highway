@@ -179,6 +179,10 @@ module Highway
             context.run_sh(["cat", output_raw_path, "| xcpretty --formatter", xcpretty_json_formatter_path], bundle_exec: true, silent: true)
           end
 
+          # Export JSON file report to environment variable
+
+          context.env["XCODE_TEST_JSON_REPORT_PATH"] = temp_json_report_path
+
           # Load the build report and a JUnit report into memory.
 
           junit_report = Scan::TestResultParser.new.parse_result(File.read(output_junit_path))
