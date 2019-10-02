@@ -52,7 +52,6 @@ module Highway
       #
       # @return [String]
       def artifacts_dir
-
         File.join(File.expand_path(FastlaneCore::FastlaneFolder.path), "highway")
       end
 
