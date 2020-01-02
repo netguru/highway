@@ -84,7 +84,7 @@ module Highway
               },
   
               urls: {
-                install: respone["install_url"],
+                install: response["install_url"],
                 view: response["download_url"],
               },
   
