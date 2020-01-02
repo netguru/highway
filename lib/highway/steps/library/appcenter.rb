@@ -39,6 +39,12 @@ module Highway
                 type: Types::String.new(),
               ),
               Parameters::Single.new(
+                name: "distribution_group",
+                required: false,
+                type: Types::String.new(),
+                default: "*"
+              ),
+              Parameters::Single.new(
                 name: "notify",
                 required: false,
                 type: Types::Bool.new(),
@@ -53,6 +59,7 @@ module Highway
             owner_name = parameters["owner_name"]
             app_name = parameters["app_name"]
             notify = parameters["notify"]
+            destinations = parameters["distribution_group"]
 
             context.assert_gem_available!(plugin_name)
   
@@ -60,6 +67,7 @@ module Highway
               api_token: api_token,
               owner_name: owner_name,
               app_name: app_name,
+              destinations: destinations,
               notify_testers: notify
             })
   
