@@ -70,6 +70,17 @@ module Highway
                 name: "team_name",
                 required: false,
                 type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "skip_binary_upload",
+                required: false,
+                default: false,
+                type: Types::Bool.new()
+              ),
+              Parameters::Single.new(
+                name: "build_number",
+                required: false,
+                type: Types::String.new()
               )
             ]
           end
@@ -86,6 +97,8 @@ module Highway
             submit_for_review = parameters["submit_for_review"]
             team_id = parameters["team_id"]
             team_name = parameters["team_name"]
+            skip_binary_upload = parameters["skip_binary_upload"]
+            build_number = parameters["build_number"]
 
             env = {
               "FASTLANE_PASSWORD" => password,
@@ -101,6 +114,8 @@ module Highway
                 skip_app_version_update: skip_app_version_update,
                 submit_for_review: submit_for_review,
                 team_id: team_id,
+                skip_binary_upload: skip_binary_upload,
+                build_number: build_number,
                 team_name: team_name
               })
             }
