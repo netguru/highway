@@ -78,6 +78,12 @@ module Highway
                 type: Types::Bool.new()
               ),
               Parameters::Single.new(
+                name: "force",
+                required: false,
+                default: true,
+                type: Types::Bool.new()
+              ),
+              Parameters::Single.new(
                 name: "build_number",
                 required: false,
                 type: Types::String.new()
@@ -98,6 +104,7 @@ module Highway
             team_id = parameters["team_id"]
             team_name = parameters["team_name"]
             skip_binary_upload = parameters["skip_binary_upload"]
+            force = parameters["force"]
             build_number = parameters["build_number"]
 
             env = {
@@ -116,7 +123,8 @@ module Highway
                 team_id: team_id,
                 skip_binary_upload: skip_binary_upload,
                 build_number: build_number,
-                team_name: team_name
+                team_name: team_name,
+                force: force
               })
             }
   
