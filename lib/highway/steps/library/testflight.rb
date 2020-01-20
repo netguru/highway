@@ -45,6 +45,11 @@ module Highway
                 type: Types::String.new()
               ),
               Parameters::Single.new(
+                name: "team_name",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
                 name: "skip_submission",
                 required: false,
                 default: true,
@@ -71,6 +76,7 @@ module Highway
 
             username = parameters["username"]
             apple_id = parameters["apple_id"]
+            team_name = parameters["team_name"]
             skip_submission = parameters["skip_submission"]
             skip_waiting_for_build_processing = parameters["skip_waiting_for_build_processing"]
 
@@ -85,7 +91,8 @@ module Highway
                 username: username,
                 skip_submission: skip_submission,
                 skip_waiting_for_build_processing: skip_waiting_for_build_processing,
-                apple_id: apple_id
+                apple_id: apple_id,
+                team_name: team_name
               })
             }
   
