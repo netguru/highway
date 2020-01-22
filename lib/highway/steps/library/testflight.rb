@@ -20,18 +20,8 @@ module Highway
           def self.parameters
             [
               Parameters::Single.new(
-                name: "username",
+                name: "apple_id",
                 required: true,
-                type: Types::String.regex(/^\S+@\S+\.\S+$/)
-              ),
-              Parameters::Single.new(
-                name: "password",
-                required: false,
-                type: Types::String.new()
-              ),
-              Parameters::Single.new(
-                name: "session",
-                required: false,
                 type: Types::String.new()
               ),
               Parameters::Single.new(
@@ -40,12 +30,12 @@ module Highway
                 type: Types::String.new()
               ),
               Parameters::Single.new(
-                name: "apple_id",
-                required: true,
+                name: "password",
+                required: false,
                 type: Types::String.new()
               ),
               Parameters::Single.new(
-                name: "team_name",
+                name: "session",
                 required: false,
                 type: Types::String.new()
               ),
@@ -60,6 +50,16 @@ module Highway
                 required: false,
                 default: true,
                 type: Types::Bool.new()
+              ),
+              Parameters::Single.new(
+                name: "team_name",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "username",
+                required: true,
+                type: Types::String.regex(/^\S+@\S+\.\S+$/)
               )
             ]
           end

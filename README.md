@@ -15,7 +15,7 @@ Highway combines what’s best about Bitrise and Fastlane into one tool. It is a
 Higway is currently at the beginning of its path. Few things needs to be done before the road will be open.
 
 - [ ] Add Highway to two existing projects, to be used as a reference
-- [ ] Publish public documentation
+- [x] Publish public documentation
 - [ ] Release version 1.0 and make a noise
 - [ ] Make it clear that Highway is ready to be used in other projects.
 
@@ -47,7 +47,7 @@ import_from_git(
 	branch: "develop"
 )
 ```
-Create Highwayfile and configure [steps](#available-steps).
+Create Highwayfile and configure [steps](https://github.com/netguru/highway/wiki).
 
 ```
 touch Highwayfile.yml
@@ -59,9 +59,8 @@ Run the Highway by:
 bundle exec fastlane highway
 ```
 
-## Available steps
+For more information please check [Highway wiki](https://github.com/netguru/highway/wiki).
 
-To be continued...
 
 ## Authors
 

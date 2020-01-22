@@ -24,17 +24,12 @@ module Highway
           def self.parameters
             [
               Parameters::Single.new(
-                name: "api_token",
-                required: true,
-                type: Types::String.new(),
-              ),
-              Parameters::Single.new(
-                name: "owner_name",
-                required: true,
-                type: Types::String.new(),
-              ),
-              Parameters::Single.new(
                 name: "app_name",
+                required: true,
+                type: Types::String.new(),
+              ),
+              Parameters::Single.new(
+                name: "api_token",
                 required: true,
                 type: Types::String.new(),
               ),
@@ -49,17 +44,22 @@ module Highway
                 required: false,
                 type: Types::Bool.new(),
                 default: false,
+              ),
+              Parameters::Single.new(
+                name: "owner_name",
+                required: true,
+                type: Types::String.new(),
               )
             ]
           end
   
           def self.run(parameters:, context:, report:)
   
-            api_token = parameters["api_token"]
-            owner_name = parameters["owner_name"]
             app_name = parameters["app_name"]
-            notify = parameters["notify"]
+            api_token = parameters["api_token"]
             destinations = parameters["distribution_group"]
+            notify = parameters["notify"]
+            owner_name = parameters["owner_name"]
 
             context.assert_gem_available!(plugin_name)
   

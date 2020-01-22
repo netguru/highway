@@ -20,9 +20,25 @@ module Highway
           def self.parameters
             [
               Parameters::Single.new(
-                name: "username",
+                name: "app_identifier",
                 required: true,
-                type: Types::String.regex(/^\S+@\S+\.\S+$/)
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "build_number",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "force",
+                required: false,
+                default: true,
+                type: Types::Bool.new()
+              ),
+              Parameters::Single.new(
+                name: "metadata_path",
+                required: false,
+                type: Types::String.new()
               ),
               Parameters::Single.new(
                 name: "password",
@@ -35,22 +51,18 @@ module Highway
                 type: Types::String.new()
               ),
               Parameters::Single.new(
-                name: "app_identifier",
-                required: true,
-                type: Types::String.new()
-              ),
-              Parameters::Single.new(
-                name: "metadata_path",
-                required: false,
-                type: Types::String.new()
-              ),
-              Parameters::Single.new(
                 name: "screenshots_path",
                 required: false,
                 type: Types::String.new()
               ),
               Parameters::Single.new(
                 name: "skip_app_version_update",
+                required: false,
+                default: false,
+                type: Types::Bool.new()
+              ),
+              Parameters::Single.new(
+                name: "skip_binary_upload",
                 required: false,
                 default: false,
                 type: Types::Bool.new()
@@ -72,21 +84,9 @@ module Highway
                 type: Types::String.new()
               ),
               Parameters::Single.new(
-                name: "skip_binary_upload",
-                required: false,
-                default: false,
-                type: Types::Bool.new()
-              ),
-              Parameters::Single.new(
-                name: "force",
-                required: false,
-                default: true,
-                type: Types::Bool.new()
-              ),
-              Parameters::Single.new(
-                name: "build_number",
-                required: false,
-                type: Types::String.new()
+                name: "username",
+                required: true,
+                type: Types::String.regex(/^\S+@\S+\.\S+$/)
               )
             ]
           end
