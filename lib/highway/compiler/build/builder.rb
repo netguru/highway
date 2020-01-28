@@ -134,7 +134,7 @@ module Highway
           reduced = resolved.reduce([]) { |memo, segment|
             if last = memo.pop()
               if last.is_a?(Analyze::Tree::Segments::Text) && segment.is_a?(Analyze::Tree::Segments::Text)
-                memo + [Analyze::Tree::Segments::Text.new(value: last.value + segment.value)]
+                memo + [Analyze::Tree::Segments::Text.new(last.value + segment.value)]
               else
                 memo + [last, segment]
               end
