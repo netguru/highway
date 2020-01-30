@@ -53,6 +53,12 @@ module Highway
               required: true,
             ),
             Parameters::Single.new(
+              name: "skip_build",
+              type: Types::Bool.new(),
+              required: false,
+              default: false,
+            ),
+            Parameters::Single.new(
               name: "settings",
               type: Types::Hash.new(Types::String.new(), validate: lambda { |dict| dict.keys.all? { |key| /[A-Z_][A-Z0-9_]*/ =~ key } }),
               required: false,
@@ -75,6 +81,7 @@ module Highway
           configuration = parameters["configuration"]
           device = parameters["device"]
           scheme = parameters["scheme"]
+          skip_build = parameters["skip_build"]
           code_coverage = parameters["code_coverage"]
 
           flags = parameters["flags"].join(" ")
@@ -124,6 +131,7 @@ module Highway
               device: device,
               scheme: scheme,
               code_coverage: code_coverage,
+              skip_build: skip_build,
 
               xcargs: xcargs,
 
