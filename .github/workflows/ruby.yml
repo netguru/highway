@@ -1,12 +1,10 @@
-name: Run Rake
+name: Main
 
 on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby 2.6
@@ -18,3 +16,10 @@ jobs:
         gem install bundler
         bundle install --jobs 4 --retry 3
         bundle exec rake
+    - name: Slatify
+      uses: homoluctus/slatify@v2.1.0
+      if: always()
+      with:
+        type: ${{ job.status }}
+        job_name: '*Tests Result*'
+        url: ${{ secrets.SLACK_WEBHOOK }}
