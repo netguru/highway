@@ -4,27 +4,11 @@
 #
 
 require "highway"
-
-class EnvironmentMock < Highway::Environment
-
-    def initialize(elements)
-        @elements = elements
-    end
-
-    attr_reader :elements
-
-    def [](key)
-        @elements[key]
-    end
-
-    def []=(key, value)
-        @elements[key] = value
-    end
-end
+require "spec/helpers/environment_mock"
 
 describe Highway::Environment do
     before {
-        @environment = EnvironmentMock.new({"Release" => true, "Build" => true, "Scheme" => "Staging", "Configuration" => ""})
+        @environment = HighwaySpec::Helpers::EnvironmentMock.new({"Release" => true, "Build" => true, "Scheme" => "Staging", "Configuration" => ""})
     }
 
     it "Finds value for the given key" do
