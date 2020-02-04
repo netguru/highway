@@ -16,6 +16,12 @@ jobs:
         gem install bundler
         bundle install --jobs 4 --retry 3
         bundle exec rake
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      if: success()
+      with:
+        name: Coverage report
+        path: coverage
     - name: Slatify
       uses: homoluctus/slatify@v2.1.0
       if: always()
