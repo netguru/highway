@@ -26,12 +26,12 @@ module Highway
               Parameters::Single.new(
                 name: "app_name",
                 required: true,
-                type: Types::String.new(),
+                type: Types::String.new()
               ),
               Parameters::Single.new(
                 name: "api_token",
                 required: true,
-                type: Types::String.new(),
+                type: Types::String.new()
               ),
               Parameters::Single.new(
                 name: "distribution_group",
@@ -40,15 +40,20 @@ module Highway
                 default: "*"
               ),
               Parameters::Single.new(
+                name: "dsym",
+                required: false,
+                type: Types::String.new()
+              ),
+              Parameters::Single.new(
                 name: "notify",
                 required: false,
                 type: Types::Bool.new(),
-                default: false,
+                default: false
               ),
               Parameters::Single.new(
                 name: "owner_name",
                 required: true,
-                type: Types::String.new(),
+                type: Types::String.new()
               )
             ]
           end
@@ -58,6 +63,7 @@ module Highway
             app_name = parameters["app_name"]
             api_token = parameters["api_token"]
             destinations = parameters["distribution_group"]
+            dsym = parameters["dsym"]
             notify = parameters["notify"]
             owner_name = parameters["owner_name"]
 
@@ -68,7 +74,8 @@ module Highway
               owner_name: owner_name,
               app_name: app_name,
               destinations: destinations,
-              notify_testers: notify
+              notify_testers: notify,
+              dsym: dsym
             })
   
             response = context.fastlane_lane_context[:APPCENTER_BUILD_INFORMATION]
