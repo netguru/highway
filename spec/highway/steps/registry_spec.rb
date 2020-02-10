@@ -13,7 +13,6 @@ describe Highway::Steps::Registry do
         expect(registry.get_by_name("appstore")).not_to be_nil
         expect(registry.get_by_name("carthage")).not_to be_nil
         expect(registry.get_by_name("cocoapods")).not_to be_nil
-        expect(registry.get_by_name("hockeyapp")).not_to be_nil
         expect(registry.get_by_name("lane")).not_to be_nil
         expect(registry.get_by_name("slack")).not_to be_nil
         expect(registry.get_by_name("testflight")).not_to be_nil

@@ -168,7 +168,9 @@ module Highway
           # directory to artifacts directory.
 
           output_raw_temp_path = Dir.glob(File.join(output_raw_temp_dir, "*.log")).first
-          FileUtils.mv(output_raw_temp_path, output_raw_path)
+          unless output_raw_temp_path.nil?
+            FileUtils.mv(output_raw_temp_path, output_raw_path)
+          end
 
           # Save the artifact paths in the subreport.
 
@@ -194,7 +196,11 @@ module Highway
           # Load the build report and a JUnit report into memory.
 
           junit_report = Scan::TestResultParser.new.parse_result(File.read(output_junit_path))
-          xcode_report = JSON.parse(File.read(temp_json_report_path))
+          if File.exist?(temp_json_report_path)
+            xcode_report = JSON.parse(File.read(temp_json_report_path))
+          else
+            xcode_report = Hash.new()
+          end
 
           # Extract test numbers from JUnit report.
 
@@ -234,7 +240,7 @@ module Highway
 
           # Extract test failures from the build report.
 
-          report_test_failures = xcode_report.fetch("tests_failures", []).values.flatten.map { |entry|
+          report_test_failures = xcode_report.fetch("tests_failures", {}).values.flatten.map { |entry|
             {location: entry["test_case"], reason: entry["reason"]}
           }
 
