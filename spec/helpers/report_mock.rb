@@ -15,16 +15,12 @@ module HighwaySpec
 
             def prepare_artifact(name)
                 dirname = File.dirname(File.join("temp", "spec"))
-                puts dirname
                 unless File.directory?(dirname)
-                    puts "DIRECTORY DOES NOT EXIST"
                     FileUtils.mkdir_p(dirname)
                 end
 
                 file = File.join(dirname, "#{name}")
                 File.new(file, "w+")
-                puts "Prepared"
-                puts file
                 file
             end
         end
