@@ -1,66 +1,29 @@
-# Highway
-> [It's my way or the highway.](https://en.wikipedia.org/wiki/My_way_or_the_highway)
+![](Images/highway-header@2x.png)
+![Main](https://github.com/netguru/highway/workflows/Main/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/highway.svg)](https://badge.fury.io/rb/highway)
 
-Highway combines what’s best about Bitrise and Fastlane into one tool. It is a build system built on top of Fastlane.
+**Highway** combines what’s best about Bitrise and Fastlane into one tool. It is a build system built on top of Fastlane.
 
 ## Goal
 
 * **Combine what's best of Bitrise.yml and Fastlane.** Highway prefers declarative configuration over convenience and takes advantage of a broad library of steps provided by Fastlane.
 * **Reduce feedback loops.** Provide information faster and in more detail so that you don't waste time, especially when integrated with Danger.
 * **Bring us closer to Continuous Delivery.** Highway allows to easily take advantage of existing tools to finally implement production CD in our projects.
-* **Allow centralization of configuration.** Provide a first-party support to set default values and behaviors across projects. In the future, adding e.g. Carthage-Rome to our projects will be a matter of editing a central “default” configuration file in some repository. No more spreadsheets!
+* **Allow centralization of configuration.** Provide a first-party support to set default values and behaviors across projects. In the future, adding e.g. Carthage-Rome to our projects will be a matter of editing a central “default” configuration file in some repository.
 
-### Current status
+![](Images/highway-example.gif)
 
-Higway is currently at the beginning of its path. Few things needs to be done before the road will be open.
+## Getting started
 
-- [ ] Add Highway to two existing projects, to be used as a reference
-- [x] Publish public documentation
-- [ ] Release version 1.0 and make a noise
-- [ ] Make it clear that Highway is ready to be used in other projects.
+You're probably looking for a quick reference how to implement Highway in your project, right?
 
-### Getting started
+We keep all of the end-user documentation in our [wiki](https://github.com/netguru/highway/wiki/).
 
-For start [bundler](https://github.com/bundler/bundler) is required.
+Some quick links: [Installation](https://github.com/netguru/highway/wiki/Installation), [Configuration](https://github.com/netguru/highway/wiki/Configuration), [Why Highway was created](https://github.com/netguru/highway/wiki#why-highway-was-created).
 
-```
-gem install bundler
-```
+## Contributing
 
-Add Highway to your Gemfile.
-
-```
-gem "highway", git: "https://github.com/netguru/highway.git", branch: "develop"
-```
-
-Install dependencies.
-
-```
-bundle install
-```
-
-Create Fastfile in fastlane directory with the content:
-
-```
-import_from_git(
-	url: "https://github.com/netguru/highway.git",
-	branch: "develop"
-)
-```
-Create Highwayfile and configure [steps](https://github.com/netguru/highway/wiki).
-
-```
-touch Highwayfile.yml
-```
-
-Run the Highway by:
-
-```
-bundle exec fastlane highway
-```
-
-For more information please check [Highway wiki](https://github.com/netguru/highway/wiki).
-
+If you have ideas of new features that could be supported in Highway, feel free to [create an issue](https://github.com/netguru/highway/issues/new)!
 
 ## Authors
 
