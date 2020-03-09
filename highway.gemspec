@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.version = Highway::VERSION
   spec.summary = "Build system on top of Fastlane."
   spec.homepage = "https://github.com/netguru/highway"
+  spec.metadata    = { "source_code_uri" => "https://github.com/netguru/highway" }
 
   spec.author = "Netguru"
   spec.license = "MIT"
