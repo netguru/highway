@@ -54,6 +54,12 @@ module Highway
                 name: "owner_name",
                 required: true,
                 type: Types::String.new()
+              ),
+              Parameters::Single.new(
+                name: "upload_dsym_only",
+                required: false,
+                type: Types::Bool.new(),
+                default: false
               )
             ]
           end
@@ -66,6 +72,7 @@ module Highway
             dsym = parameters["dsym"]
             notify = parameters["notify"]
             owner_name = parameters["owner_name"]
+            upload_dsym_only = parameters["upload_dsym_only"]
 
             context.assert_gem_available!(plugin_name)
   
@@ -75,27 +82,30 @@ module Highway
               app_name: app_name,
               destinations: destinations,
               notify_testers: notify,
-              dsym: dsym
+              dsym: dsym,
+              upload_dsym_only: upload_dsym_only
             })
   
             response = context.fastlane_lane_context[:APPCENTER_BUILD_INFORMATION]
+
+            unless response.nil?
+              report[:deployment] = {
   
-            report[:deployment] = {
-  
-              service: "AppCenter",
-  
-              package: {
-                name: response["app_display_name"],
-                version: response["short_version"],
-                build: response["version"],
-              },
-  
-              urls: {
-                install: response["install_url"],
-                view: response["download_url"],
-              },
-  
-            }
+                service: "AppCenter",
+    
+                package: {
+                  name: response["app_display_name"],
+                  version: response["short_version"],
+                  build: response["version"],
+                },
+    
+                urls: {
+                  install: response["install_url"],
+                  view: response["download_url"],
+                },
+    
+              }
+            end
   
           end
   
