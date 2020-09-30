@@ -10,7 +10,7 @@ require "spec/helpers/context_mock"
 describe Highway::Steps::Library::AppCenterStep do
     before {
         @context = HighwaySpec::Helpers::ContextMock.new()
-        @context.fastlane_lane_context = { 
+        @context.fastlane_lane_context = {
             :APPCENTER_BUILD_INFORMATION => {
                 "app_display_name" => "AppTest",
                 "short_version" => "1.1.0",
@@ -31,7 +31,8 @@ describe Highway::Steps::Library::AppCenterStep do
             "app_name" => "AppTest",
             "api_token" => "12345abcde",
             "distribution_group" => "Testers",
-            "owner_name" => "owner"
+            "owner_name" => "owner",
+            "release_notes" => "Fixture release notes."
         }
 
         Highway::Steps::Library::AppCenterStep.run(parameters: parameters, context: @context, report: @report)
@@ -40,5 +41,6 @@ describe Highway::Steps::Library::AppCenterStep do
         expect(@context.run_action_options[:owner_name]).to eq(parameters["owner_name"])
         expect(@context.run_action_options[:app_name]).to eq(parameters["app_name"])
         expect(@context.run_action_options[:destinations]).to eq(parameters["distribution_group"])
+        expect(@context.run_action_options[:release_notes]).to eq(parameters["release_notes"])
     end
 end
