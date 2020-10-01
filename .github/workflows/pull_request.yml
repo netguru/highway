@@ -1,6 +1,6 @@
-name: Main
+name: Pull Request Workflow - Build and test
 
-on: push
+on: pull_request
 
 jobs:
   build:
@@ -22,10 +22,3 @@ jobs:
       with:
         name: Coverage report
         path: coverage
-    - name: Slatify
-      uses: homoluctus/slatify@v2.1.0
-      if: always()
-      with:
-        type: ${{ job.status }}
-        job_name: '*Tests Result*'
-        url: ${{ secrets.SLACK_WEBHOOK }}
