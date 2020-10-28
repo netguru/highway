@@ -28,6 +28,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "slack-notifier", ">= 2.0.0", "<= 3.0.0"
   spec.add_dependency "uri-ssh_git", ">= 2.0.0", "<= 3.0.0"
   spec.add_dependency "xcpretty-json-formatter", ">= 0.1.1", "<= 1.0.0"
+  spec.add_dependency "gpgme", ">= 2.0.0", "<= 3.0.0"
+  spec.add_dependency "rubyzip", ">= 2.0.0", "<= 3.0.0"
 
   # Development Dependencies
 

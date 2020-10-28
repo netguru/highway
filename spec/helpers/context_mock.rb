@@ -17,8 +17,11 @@ module HighwaySpec
 
             attr_accessor :fastlane_lane_context
 
+            attr_reader :interface
+
             def initialize()
                 @env = HighwaySpec::Helpers::EnvironmentMock.new({})
+                @interface = Highway::Interface.new
             end
 
             def run_action(name, options:)
