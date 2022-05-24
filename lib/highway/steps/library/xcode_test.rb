@@ -111,6 +111,7 @@ module Highway
           output_dir = context.artifacts_dir
           output_types = ["html", "junit"].join(",")
           output_files = [output_html_file, output_junit_file].join(",")
+          xcodebuild_formatter = "xcpretty"
 
           # Prepare temporary variables.
 
@@ -139,6 +140,7 @@ module Highway
               output_directory: output_dir,
               output_types: output_types,
               output_files: output_files,
+              xcodebuild_formatter: xcodebuild_formatter,
 
             })
 
