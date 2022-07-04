@@ -6,12 +6,13 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   run-tests:
-    macos: 
+    macos:
       xcode: 13.4.1
     steps:
       - checkout
       - run: |
           gem install bundler
+          brew install gpg
           bundle install --jobs 4 --retry 3
           bundle exec rake
       - store_test_results:
