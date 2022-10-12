@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run: |
           gem install bundler
-          brew install gpg
+          brew install gpg 
           bundle install --jobs 4 --retry 3
           bundle exec rake
       - store_test_results:
