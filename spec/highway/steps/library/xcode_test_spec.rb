@@ -35,4 +35,37 @@ describe Highway::Steps::Library::XcodeTestStep do
         Highway::Steps::Library::XcodeTestStep.run(parameters: parameters, context: @context, report: @report)
         expect(@context.run_action_name).to eq("run_tests")
     end
+
+    it "Checks using fastlane_params" do
+        fastlane_params = {:extra_param1 => "fixture", :extra_param2 => 2}
+        parameters = {
+            "project" => { :tag => :project, :value => "Project.xcworkspace" },
+            "scheme" => "Release",
+            "flags" => [],
+            "clean" => true,
+            "settings" => {},
+            "fastlane_params" => fastlane_params
+        }
+
+        Highway::Steps::Library::XcodeTestStep.run(parameters: parameters, context: @context, report: @report)
+        expect(@context.run_action_name).to eq("run_tests")
+        expect(@context.run_action_options).to include(fastlane_params)
+    end 
+
+    it "Checks fastlane_params not overriding step params" do
+        fastlane_params = {:scheme => "fixture", :extra_param2 => 2}
+        parameters = {
+            "project" => { :tag => :project, :value => "Project.xcworkspace" },
+            "scheme" => "Release",
+            "flags" => [],
+            "clean" => true,
+            "settings" => {},
+            "fastlane_params" => fastlane_params
+        }
+
+        Highway::Steps::Library::XcodeTestStep.run(parameters: parameters, context: @context, report: @report)
+        expect(@context.run_action_name).to eq("run_tests")
+        expect(@context.run_action_options[:scheme]).to eq("Release")
+        expect(@context.run_action_options[:extra_param2]).to eq(2)
+    end 
 end

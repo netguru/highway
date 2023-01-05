@@ -68,7 +68,12 @@ module Highway
               name: "code_coverage",
               type: Types::Bool.new(),
               required: false,
-            )
+            ),
+            Parameters::Single.new(
+              name: "fastlane_params",
+              type: Types::Hash.new(Types::Any.new()),
+              required: false
+            ),
           ]
         end
 
@@ -83,6 +88,7 @@ module Highway
           scheme = parameters["scheme"]
           skip_build = parameters["skip_build"]
           code_coverage = parameters["code_coverage"]
+          fastlane_params = parameters["fastlane_params"]
 
           flags = parameters["flags"].join(" ")
           settings = parameters["settings"].map { |setting, value| "#{setting}=\"#{value.shellescape}\"" }.join(" ")
@@ -120,29 +126,31 @@ module Highway
           rescued_error = nil
 
           # Run the build and test.
+          options = {
+
+            project_key => project_value,
+
+            clean: clean,
+            configuration: configuration,
+            device: device,
+            scheme: scheme,
+            code_coverage: code_coverage,
+            skip_build: skip_build,
+
+            xcargs: xcargs,
+
+            buildlog_path: output_raw_temp_dir,
+            output_directory: output_dir,
+            output_types: output_types,
+            output_files: output_files,
+            xcodebuild_formatter: xcodebuild_formatter,
+
+          }
 
           begin
-
-            context.run_action("run_tests", options: {
-
-              project_key => project_value,
-
-              clean: clean,
-              configuration: configuration,
-              device: device,
-              scheme: scheme,
-              code_coverage: code_coverage,
-              skip_build: skip_build,
-
-              xcargs: xcargs,
-
-              buildlog_path: output_raw_temp_dir,
-              output_directory: output_dir,
-              output_types: output_types,
-              output_files: output_files,
-              xcodebuild_formatter: xcodebuild_formatter,
-
-            })
+            fastlane_params = fastlane_params.nil? ? {} : fastlane_params
+            combined_options = fastlane_params.merge(options)
+            context.run_action("run_tests", options: combined_options)
 
           rescue FastlaneCore::Interface::FastlaneBuildFailure => error
 
