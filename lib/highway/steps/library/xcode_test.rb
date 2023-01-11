@@ -193,7 +193,7 @@ module Highway
           # that happened in the build.
 
           error_callback = ->(error) { 
-            puts "callback eror: #{error}" 
+            rescued_error = error
           }
 
           xcpretty_json_formatter_path = context.run_sh("xcpretty-json-formatter", bundle_exec: true, silent: true, rescue_error: error_callback)
