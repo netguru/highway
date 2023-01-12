@@ -200,9 +200,9 @@ module Highway
       # @param bundle_exec [Boolean] Whether to use `bundle exec` if possible.
       # @param silent [Boolean] Whether to run the command silently.
       # @param on_error [Proc] Called if command exits with a non-zero code.
-      def run_sh(command, bundle_exec: false, silent: false, rescue_error: nil)
+      def run_sh(command, bundle_exec: false, silent: false, on_error: nil)
         command = ["bundle exec", command].flatten if bundle_exec && should_use_bundle_exec?
-        Fastlane::Actions.sh(command, log: !silent, error_callback: rescue_error)
+        Fastlane::Actions.sh(command, log: !silent, error_callback: on_error)
       end
 
       private

@@ -196,11 +196,11 @@ module Highway
             rescued_error = error
           }
 
-          xcpretty_json_formatter_path = context.run_sh("xcpretty-json-formatter", bundle_exec: true, silent: true, rescue_error: error_callback)
+          xcpretty_json_formatter_path = context.run_sh("xcpretty-json-formatter", bundle_exec: true, silent: true, on_error: error_callback)
           temp_json_report_path = File.join(Dir.mktmpdir(), "report.json")
 
           context.with_modified_env({"XCPRETTY_JSON_FILE_OUTPUT" => temp_json_report_path}) do
-            context.run_sh(["cat", output_raw_path, "| xcpretty --formatter", xcpretty_json_formatter_path], bundle_exec: true, silent: true, rescue_error: error_callback)
+            context.run_sh(["cat", output_raw_path, "| xcpretty --formatter", xcpretty_json_formatter_path], bundle_exec: true, silent: true, on_error: error_callback)
           end
 
           # Export JSON file report to environment variable
