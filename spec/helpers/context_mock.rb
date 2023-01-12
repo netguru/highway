@@ -16,6 +16,7 @@ module HighwaySpec
             attr_accessor :run_sh_command
 
             attr_accessor :fastlane_lane_context
+            attr_accessor :sh_error
 
             attr_reader :interface
 
@@ -35,6 +36,9 @@ module HighwaySpec
             def run_sh(command, bundle_exec: false, silent: false, on_error: nil)
                 command = ["bundle exec", command].flatten if bundle_exec && should_use_bundle_exec?
                 @run_sh_command = command
+                if !sh_error.nil? && !on_error.nil?
+                    on_error.call(sh_error)
+                end
             end
         end
     end
