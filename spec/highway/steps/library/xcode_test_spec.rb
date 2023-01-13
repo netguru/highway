@@ -68,4 +68,21 @@ describe Highway::Steps::Library::XcodeTestStep do
         expect(@context.run_action_options[:scheme]).to eq("Release")
         expect(@context.run_action_options[:extra_param2]).to eq(2)
     end 
+
+    it "Checks if proper error is returned when sh fails" do
+        parameters = {
+            "project" => { :tag => :project, :value => "Project.xcworkspace" },
+            "scheme" => "Release",
+            "flags" => [],
+            "clean" => true,
+            "settings" => {},
+        }
+        error = "Fixture error"
+        @context.sh_error = error
+        begin 
+            Highway::Steps::Library::XcodeTestStep.run(parameters: parameters, context: @context, report: @report)
+        rescue RuntimeError => found_error
+            expect(found_error.message).to eq(error)
+        end    
+    end 
 end
